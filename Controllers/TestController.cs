@@ -12,7 +12,7 @@ namespace mapa_back.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            return new string[] { "value1", "value2" };
+            return new string[] { "hello", "world" };
         }
 
         // GET api/<TestController>/5
