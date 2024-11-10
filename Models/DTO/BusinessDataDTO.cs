@@ -1,11 +1,12 @@
-﻿using System.Text.Json.Serialization;
+﻿using mapa_back.Models.RSPOApi;
+using System.Text.Json.Serialization;
 
-namespace mapa_back.Models.RSPOApi
+namespace mapa_back.Models.DTO
 {
-    public class SchoolApi
+    public class BusinessDataDTO
     {
         [JsonPropertyName("typ")]
-        public RSPOTypeSchema? Typ { get; set; }
+        public string? Typ { get; set; }
 
         [JsonPropertyName("faks")]
         public string? Faks { get; set; }
@@ -31,20 +32,14 @@ namespace mapa_back.Models.RSPOApi
         [JsonPropertyName("telefon")]
         public string Telefon { get; set; }
 
-        [JsonPropertyName("dyrektorImie")]
-        public string? DyrektorImie { get; set; } 
+        [JsonPropertyName("dyrektor")]
+        public string Dyrektor { get; set; }
 
-        [JsonPropertyName("dyrektorNazwisko")]
-        public string? DyrektorNazwisko { get; set; } 
-
-        [JsonIgnore]
-        public string Dyrektor => $"{DyrektorImie} {DyrektorNazwisko}".Trim(); 
-
-        [JsonPropertyName("numerRspo")]
+        [JsonPropertyName("rspoNumer")]
         public int RspoNumer { get; set; }
 
         [JsonPropertyName("kodPocztowy")]
-        public string KodPocztowy { get; set; }
+        public string? KodPocztowy { get; set; }
 
         [JsonPropertyName("miejscowosc")]
         public string Miejscowosc { get; set; }
@@ -62,7 +57,7 @@ namespace mapa_back.Models.RSPOApi
         public string? NumerBudynku { get; set; }
 
         [JsonPropertyName("dataZalozenia")]
-        public DateTime DataZalozenia { get; set; }
+        public DateTime? DataZalozenia { get; set; }
 
         [JsonPropertyName("liczbaUczniow")]
         public int? LiczbaUczniow { get; set; }
@@ -80,7 +75,7 @@ namespace mapa_back.Models.RSPOApi
         public string? TerenySportowe { get; set; }
 
         [JsonPropertyName("kategoriaUczniow")]
-        public RSPOTypeSchema? KategoriaUczniow { get; set; }
+        public string? KategoriaUczniow { get; set; }
 
         [JsonPropertyName("strukturaMiejsce")]
         public string? StrukturaMiejsce { get; set; }
@@ -88,8 +83,8 @@ namespace mapa_back.Models.RSPOApi
         [JsonPropertyName("specyfikaPlacowki")]
         public string? SpecyfikaPlacowki { get; set; }
 
-        [JsonPropertyName("statusPublicznoPrawny")]
-        public RSPOTypeSchema? StatusPublicznosc { get; set; }
+        [JsonPropertyName("statusPublicznosc")]
+        public string? StatusPublicznosc { get; set; }
 
         [JsonPropertyName("stronaInternetowa")]
         public string? StronaInternetowa { get; set; }
@@ -100,13 +95,13 @@ namespace mapa_back.Models.RSPOApi
         [JsonPropertyName("organProwadzacyTyp")]
         public string? OrganProwadzacyTyp { get; set; }
 
-        [JsonPropertyName("gminaRodzaj")]
+        [JsonPropertyName("rodzajMiejscowosci")]
         public string? RodzajMiejscowosci { get; set; }
 
         [JsonPropertyName("podmiotNadrzednyTyp")]
         public string? PodmiotNadrzednyTyp { get; set; }
 
-        [JsonPropertyName("gminaKodTERYT")]
+        [JsonPropertyName("kodTerytorialnyGmina")]
         public string? KodTerytorialnyGmina { get; set; }
 
         [JsonPropertyName("organProwadzacyGmina")]
@@ -121,29 +116,25 @@ namespace mapa_back.Models.RSPOApi
         [JsonPropertyName("podmiotNadrzednyRspo")]
         public string? PodmiotNadrzednyRspo { get; set; }
 
-        [JsonPropertyName("powiatKodTERYT")]
+        [JsonPropertyName("kodTerytorialnyPowiat")]
         public string? KodTerytorialnyPowiat { get; set; }
 
         [JsonPropertyName("organProwadzacyPowiat")]
         public string? OrganProwadzacyPowiat { get; set; }
 
-        [JsonPropertyName("podmiotNadrzedny")]
+        [JsonPropertyName("podmiotNadrzednyNazwa")]
         public string? PodmiotNadrzednyNazwa { get; set; }
 
-        [JsonPropertyName("miejscowoscKodTERYT")]
+        [JsonPropertyName("kodTerytorialnyMiejscowosc")]
         public string? KodTerytorialnyMiejscowosc { get; set; }
 
-        [JsonPropertyName("wojewodztwoKodTERYT")]
+        [JsonPropertyName("kodTerytorialnyWojewodztwo")]
         public string? KodTerytorialnyWojewodztwo { get; set; }
 
         [JsonPropertyName("organProwadzacyWojewodztwo")]
         public string? OrganProwadzacyWojewodztwo { get; set; }
 
-        [JsonPropertyName("dataRozpoczecia")]
+        [JsonPropertyName("dataRozpoczeciaDzialalnosci")]
         public DateTime? DataRozpoczeciaDzialalnosci { get; set; }
-
-        [JsonPropertyName("geolokalizacja")]
-        public Geolokalizacja Geolokalizacja { get; set; }
-
     }
 }
