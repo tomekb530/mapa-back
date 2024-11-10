@@ -1,4 +1,5 @@
-﻿using mapa_back.Services;
+﻿using mapa_back.Exceptions;
+using mapa_back.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,11 +11,9 @@ namespace mapa_back.Controllers
     [ApiController]
     public class SchoolsController : ControllerBase
     {
-        private readonly DatabaseContext _dbcontext;
         private readonly IRSPOApiService rSPOApiService;
         public SchoolsController(DatabaseContext context, IRSPOApiService apiService)
         {
-            _dbcontext = context;
             rSPOApiService = apiService;
         }
 
@@ -34,6 +33,10 @@ namespace mapa_back.Controllers
                     return StatusCode(StatusCodes.Status200OK);
                 }
                 return StatusCode(StatusCodes.Status404NotFound);
+            }
+            catch(RSPOToDatabaseException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
             catch (Exception ex)
             {

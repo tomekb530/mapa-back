@@ -1,5 +1,6 @@
 using DotNetEnv;
 using mapa_back;
+using mapa_back.Mappers;
 using mapa_back.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,8 +14,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING");
-builder.Services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(connectionString));
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new InvalidOperationException("Database connection string is not set.");
+}
+builder.Services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(connectionString, o => o.UseNetTopologySuite()), optionsLifetime:ServiceLifetime.Scoped);
 builder.Services.AddScoped<IRSPOApiService, RSPOApiService>();
+builder.Services.AddAutoMapper(typeof(MapToBusinessData));
 
 var app = builder.Build();
 
