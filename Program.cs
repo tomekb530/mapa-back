@@ -1,5 +1,6 @@
 using DotNetEnv;
 using mapa_back;
+using mapa_back.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING");
 builder.Services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(connectionString));
+builder.Services.AddScoped<IRSPOApiService, RSPOApiService>();
 
 var app = builder.Build();
 
