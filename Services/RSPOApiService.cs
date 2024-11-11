@@ -15,11 +15,12 @@ namespace mapa_back.Services
     {
         private readonly DatabaseContext _dbContext;
         private readonly IMapper _mapper;
-
-        public RSPOApiService(DatabaseContext dbContext, IMapper mapper)
+        private readonly HttpClient _httpClient;
+        public RSPOApiService(DatabaseContext dbContext, IMapper mapper, HttpClient httpClient)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _httpClient = httpClient;
         }
         
 
@@ -44,7 +45,7 @@ namespace mapa_back.Services
                 }
                 return numberOfPages;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw new RSPOToDatabaseException("Unexpected error occurred while trying to get number of pages from response json");
             }
@@ -62,7 +63,7 @@ namespace mapa_back.Services
                 }
                 return placowki;
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 throw new RSPOToDatabaseException("Unexpected error occurred while trying to GetSchoolsFromResponse JSON");
             }
@@ -76,21 +77,18 @@ namespace mapa_back.Services
                 { 
                     schoolInDatabase.Geography = geography;
                     schoolInDatabase.BusinessData = businessDataJson;
-                    await _dbContext.SaveChangesAsync();
                 }
                 else
                 {
-                    School newSchool = new School
+                    _dbContext.Schools.Add(new School
                     {
                         BusinessData = businessDataJson,
                         Geography = geography,
                         RspoNumber = rspoNumber
-                    };
-                    _dbContext.Add(newSchool);
-                    await _dbContext.SaveChangesAsync();
+                    });
                 }
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 throw new RSPOToDatabaseException("Unexpected error occurred while trying to save single school data to database");
             }
@@ -99,69 +97,65 @@ namespace mapa_back.Services
         {
             foreach (var school in schools)
             {
-                Point point;
-                string businessDataJson;
-                try
-                {
-                    BusinessDataDTO businessData = MapToBusinessData(school);
-                    point = new Point(new Coordinate { X = school.Geolokalizacja.Longitude, Y = school.Geolokalizacja.Latitude });
-                    businessDataJson = JsonSerializer.Serialize(businessData);
-                }
-                catch(Exception ex)
-                {
-                    throw new RSPOToDatabaseException("Unexpected error occurred while trying to Map API Data to JSON BusinessData");
-                }
+                BusinessDataDTO businessData = MapToBusinessData(school);
+                Point point = new Point(new Coordinate { X = school.Geolokalizacja.Longitude, Y = school.Geolokalizacja.Latitude });
+                string businessDataJson = JsonSerializer.Serialize(businessData);
                 await SaveSingleSchoolToDatabase(point, businessDataJson, school.RspoNumer);
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
+                businessDataJson = null;
+                businessData = null;
+                point = null;
             }
+            await _dbContext.SaveChangesAsync();
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
         }
         private BusinessDataDTO MapToBusinessData(SchoolApi schoolApi)
         {
             return _mapper.Map<BusinessDataDTO>(schoolApi);
         }
-        public async Task<bool> SyncDataFromRSPOApi()
+        public async Task SyncDataFromRSPOApi()
         {
-            HttpClient client = new HttpClient();
-            HttpResponseMessage response;
-            string responseBody;
             string url = "https://api-rspo.mein.gov.pl/api/placowki/?page=1";
             int numberOfPages = 0;
             try
             {
-                response = await client.GetAsync(url);
-                response.EnsureSuccessStatusCode();
-                responseBody = await response.Content.ReadAsStringAsync();
+                using (HttpResponseMessage response = await _httpClient.GetAsync(url))
+                {
+                    response.EnsureSuccessStatusCode();
+                    string responseBody = await response.Content.ReadAsStringAsync();
+                    numberOfPages = GetNumberOfPages(responseBody);
+                }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw new RSPOToDatabaseException("Unexpected error occurred while trying to get data from RSPO API");
             }
-
-            numberOfPages = GetNumberOfPages(responseBody);
-            List<SchoolApi> schools = GetSchoolsFromResponse(responseBody);
-            await SaveSchoolsToDatabase(schools);
-            for (int i = 2; i < numberOfPages; i++)
+            for (int i = 1; i <= numberOfPages; i++)
             {
                 try
                 {
                     url = $"https://api-rspo.mein.gov.pl/api/placowki/?page={i}";
-                    response = await client.GetAsync(url);
-                    response.EnsureSuccessStatusCode();
-                    responseBody = await response.Content.ReadAsStringAsync();
+                    using (HttpResponseMessage response = await _httpClient.GetAsync(url,HttpCompletionOption.ResponseHeadersRead))
+                    {
+                        response.EnsureSuccessStatusCode();
+                        string responseBody = await response.Content.ReadAsStringAsync();
+                        List<SchoolApi> schools = GetSchoolsFromResponse(responseBody);
+                        await SaveSchoolsToDatabase(schools);
+                        response.Dispose();
+                        responseBody = null;
+                        schools = null;
+                    }
                 }
-                catch(Exception ex)
+                catch(RSPOToDatabaseException)
+                {
+                    throw;
+                }
+                catch(Exception)
                 {
                     throw new RSPOToDatabaseException("Unexpected error occurred while trying to get data from RSPO API");
                 }
-                schools = GetSchoolsFromResponse(responseBody);
-                await SaveSchoolsToDatabase(schools);
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
                 Console.WriteLine($"Readed page nr {i}");
-            }
-            return true;
-            
+            }     
         }
         
     }

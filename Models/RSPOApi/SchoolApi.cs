@@ -11,25 +11,25 @@ namespace mapa_back.Models.RSPOApi
         public string? Faks { get; set; }
 
         [JsonPropertyName("email")]
-        public string Email { get; set; }
+        public required string Email { get; set; }
 
         [JsonPropertyName("gmina")]
-        public string Gmina { get; set; }
+        public required string Gmina { get; set; }
 
         [JsonPropertyName("nazwa")]
-        public string Nazwa { get; set; }
+        public required string Nazwa { get; set; }
 
         [JsonPropertyName("ulica")]
-        public string Ulica { get; set; }
+        public required string Ulica { get; set; }
 
         [JsonPropertyName("poczta")]
         public string? Poczta { get; set; }
 
         [JsonPropertyName("powiat")]
-        public string Powiat { get; set; }
+        public required string Powiat { get; set; }
 
         [JsonPropertyName("telefon")]
-        public string Telefon { get; set; }
+        public required string Telefon { get; set; }
 
         [JsonPropertyName("dyrektorImie")]
         public string? DyrektorImie { get; set; } 
@@ -41,22 +41,22 @@ namespace mapa_back.Models.RSPOApi
         public string Dyrektor => $"{DyrektorImie} {DyrektorNazwisko}".Trim(); 
 
         [JsonPropertyName("numerRspo")]
-        public int RspoNumer { get; set; }
+        public required int RspoNumer { get; set; }
 
         [JsonPropertyName("kodPocztowy")]
-        public string KodPocztowy { get; set; }
+        public required string KodPocztowy { get; set; }
 
         [JsonPropertyName("miejscowosc")]
-        public string Miejscowosc { get; set; }
+        public required string Miejscowosc { get; set; }
 
         [JsonPropertyName("nipPodmiotu")]
         public string? NipPodmiotu { get; set; }
 
         [JsonPropertyName("numerLokalu")]
-        public string NumerLokalu { get; set; }
+        public required string NumerLokalu { get; set; }
 
         [JsonPropertyName("wojewodztwo")]
-        public string Wojewodztwo { get; set; }
+        public required string Wojewodztwo { get; set; }
 
         [JsonPropertyName("numerBudynku")]
         public string? NumerBudynku { get; set; }
@@ -143,7 +143,7 @@ namespace mapa_back.Models.RSPOApi
         public DateTime? DataRozpoczeciaDzialalnosci { get; set; }
 
         [JsonPropertyName("geolokalizacja")]
-        public Geolokalizacja Geolokalizacja { get; set; }
+        public required Geolokalizacja Geolokalizacja { get; set; }
 
     }
 }

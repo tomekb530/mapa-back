@@ -27,18 +27,14 @@ namespace mapa_back.Controllers
         {
             try
             {
-                bool result = await rSPOApiService.SyncDataFromRSPOApi();
-                if(result)
-                {
-                    return StatusCode(StatusCodes.Status200OK);
-                }
-                return StatusCode(StatusCodes.Status404NotFound);
+                await rSPOApiService.SyncDataFromRSPOApi();
+                return StatusCode(StatusCodes.Status200OK);
             }
             catch(RSPOToDatabaseException ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred while trying to sync data from RSPO API");
             }

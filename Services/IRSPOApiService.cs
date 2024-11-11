@@ -2,6 +2,6 @@
 {
     public interface IRSPOApiService
     {
-        Task<bool> SyncDataFromRSPOApi();
+        Task SyncDataFromRSPOApi();
     }
 }
