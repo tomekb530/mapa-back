@@ -112,6 +112,8 @@ namespace mapa_back.Services
                     throw new RSPOToDatabaseException("Unexpected error occurred while trying to Map API Data to JSON BusinessData");
                 }
                 await SaveSingleSchoolToDatabase(point, businessDataJson, school.RspoNumer);
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
             }
         }
         private BusinessDataDTO MapToBusinessData(SchoolApi schoolApi)
@@ -138,7 +140,7 @@ namespace mapa_back.Services
 
             numberOfPages = GetNumberOfPages(responseBody);
             List<SchoolApi> schools = GetSchoolsFromResponse(responseBody);
-            SaveSchoolsToDatabase(schools);
+            await SaveSchoolsToDatabase(schools);
             for (int i = 2; i < numberOfPages; i++)
             {
                 try
@@ -153,7 +155,9 @@ namespace mapa_back.Services
                     throw new RSPOToDatabaseException("Unexpected error occurred while trying to get data from RSPO API");
                 }
                 schools = GetSchoolsFromResponse(responseBody);
-                SaveSchoolsToDatabase(schools);
+                await SaveSchoolsToDatabase(schools);
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
             }
             return true;
             
