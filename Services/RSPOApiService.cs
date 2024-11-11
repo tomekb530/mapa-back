@@ -145,7 +145,7 @@ namespace mapa_back.Services
             {
                 try
                 {
-                    url = $"https://api-rspo.mein.gov.pl/api/placowki/?page={numberOfPages}";
+                    url = $"https://api-rspo.mein.gov.pl/api/placowki/?page={i}";
                     response = await client.GetAsync(url);
                     response.EnsureSuccessStatusCode();
                     responseBody = await response.Content.ReadAsStringAsync();
@@ -158,6 +158,7 @@ namespace mapa_back.Services
                 await SaveSchoolsToDatabase(schools);
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
+                Console.WriteLine($"Readed page nr {i}");
             }
             return true;
             
