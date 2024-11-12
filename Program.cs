@@ -20,6 +20,7 @@ if (string.IsNullOrEmpty(connectionString))
 }
 builder.Services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(connectionString, o => o.UseNetTopologySuite()), optionsLifetime:ServiceLifetime.Scoped);
 builder.Services.AddScoped<IRSPOApiService, RSPOApiService>();
+builder.Services.AddScoped<ISchoolsService, SchoolsService>();
 builder.Services.AddAutoMapper(typeof(MapToBusinessData));
 builder.Services.AddHttpClient();
 
