@@ -52,7 +52,7 @@ namespace mapa_back.Controllers
         {
             try
             {
-                long productCount = await rSPOApiService.GetSchoolsCount();
+                long productCount = await schoolsService.GetSchoolsCount();
                 if(productCount > 0)
                 {
                     return Ok(productCount);
