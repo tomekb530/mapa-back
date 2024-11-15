@@ -3,8 +3,6 @@ using mapa_back.Models;
 using mapa_back.Models.DTO;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using System.Numerics;
-using System.Runtime.CompilerServices;
 
 namespace mapa_back.Services
 {
@@ -63,6 +61,40 @@ namespace mapa_back.Services
             catch(Exception)
             {
                 throw new Exception("Unexpected error occurred while trying to get school page from database");
+            }
+        }
+        public async Task DeleteSingleSchool(int id)
+        {
+            try
+            {
+                School school = await _dbContext.Schools.FirstOrDefaultAsync(p => p.Id == id);
+                if(school == null)
+                {
+                    throw new DatabaseException($"Couldnt find school with given Id: {id}");
+                }
+                _dbContext.Schools.Remove(school);
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw new DatabaseException($"Unexpected eror occurred while trying to delete school with given Id: {id} from database");
+            }
+        }
+        public async Task DeleteManySchools(List<int> ids)
+        {
+            try
+            {
+                List<School> schools = await _dbContext.Schools.Where(school => ids.Contains(school.Id)).ToListAsync();
+                if (!schools.Any())
+                {
+                    throw new DatabaseException("No schools found with the provided IDs.");
+                }
+                _dbContext.Schools.RemoveRange(schools);
+                await _dbContext.SaveChangesAsync();
+            }
+            catch(Exception)
+            {
+                throw new DatabaseException("An unexpected error occurred while deleting schools from the database.");
             }
         }
     }

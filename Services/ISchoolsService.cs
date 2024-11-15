@@ -6,5 +6,7 @@ namespace mapa_back.Services
     {
         Task<long> GetSchoolsCount();
         Task<List<SchoolDTO>> GetSchoolsPage(int size, int pageNumber);
+        Task DeleteSingleSchool(int id);
+        Task DeleteManySchools(List<int> ids);
     }
 }
