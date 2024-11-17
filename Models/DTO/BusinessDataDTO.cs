@@ -7,9 +7,6 @@ namespace mapa_back.Models.DTO
         [JsonPropertyName("typ")]
         public string? Typ { get; set; }
 
-        [JsonPropertyName("faks")]
-        public string? Faks { get; set; }
-
         [JsonPropertyName("email")]
         public string Email { get; set; }
 
@@ -21,9 +18,6 @@ namespace mapa_back.Models.DTO
 
         [JsonPropertyName("ulica")]
         public string Ulica { get; set; }
-
-        [JsonPropertyName("poczta")]
-        public string? Poczta { get; set; }
 
         [JsonPropertyName("powiat")]
         public string Powiat { get; set; }
@@ -67,17 +61,8 @@ namespace mapa_back.Models.DTO
         [JsonPropertyName("dataLikwidacji")]
         public DateTime? DataLikwidacji { get; set; }
 
-        [JsonPropertyName("jezykiNauczane")]
-        public List<string>? JezykiNauczane { get; set; }
-
-        [JsonPropertyName("terenySportowe")]
-        public string? TerenySportowe { get; set; }
-
         [JsonPropertyName("kategoriaUczniow")]
         public string? KategoriaUczniow { get; set; }
-
-        [JsonPropertyName("strukturaMiejsce")]
-        public string? StrukturaMiejsce { get; set; }
 
         [JsonPropertyName("specyfikaPlacowki")]
         public string? SpecyfikaPlacowki { get; set; }
@@ -88,29 +73,11 @@ namespace mapa_back.Models.DTO
         [JsonPropertyName("stronaInternetowa")]
         public string? StronaInternetowa { get; set; }
 
-        [JsonPropertyName("organProwadzacyNip")]
-        public string? OrganProwadzacyNip { get; set; }
-
-        [JsonPropertyName("organProwadzacyTyp")]
-        public string? OrganProwadzacyTyp { get; set; }
-
         [JsonPropertyName("rodzajMiejscowosci")]
         public string? RodzajMiejscowosci { get; set; }
 
-        [JsonPropertyName("podmiotNadrzednyTyp")]
-        public string? PodmiotNadrzednyTyp { get; set; }
-
         [JsonPropertyName("kodTerytorialnyGmina")]
         public string? KodTerytorialnyGmina { get; set; }
-
-        [JsonPropertyName("organProwadzacyGmina")]
-        public string? OrganProwadzacyGmina { get; set; }
-
-        [JsonPropertyName("organProwadzacyNazwa")]
-        public string? OrganProwadzacyNazwa { get; set; }
-
-        [JsonPropertyName("organProwadzacyRegon")]
-        public string? OrganProwadzacyRegon { get; set; }
 
         [JsonPropertyName("podmiotNadrzednyRspo")]
         public string? PodmiotNadrzednyRspo { get; set; }
@@ -121,17 +88,11 @@ namespace mapa_back.Models.DTO
         [JsonPropertyName("organProwadzacyPowiat")]
         public string? OrganProwadzacyPowiat { get; set; }
 
-        [JsonPropertyName("podmiotNadrzednyNazwa")]
-        public string? PodmiotNadrzednyNazwa { get; set; }
-
         [JsonPropertyName("kodTerytorialnyMiejscowosc")]
         public string? KodTerytorialnyMiejscowosc { get; set; }
 
         [JsonPropertyName("kodTerytorialnyWojewodztwo")]
         public string? KodTerytorialnyWojewodztwo { get; set; }
-
-        [JsonPropertyName("organProwadzacyWojewodztwo")]
-        public string? OrganProwadzacyWojewodztwo { get; set; }
 
         [JsonPropertyName("dataRozpoczeciaDzialalnosci")]
         public DateTime? DataRozpoczeciaDzialalnosci { get; set; }

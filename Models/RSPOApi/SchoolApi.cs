@@ -7,9 +7,6 @@ namespace mapa_back.Models.RSPOApi
         [JsonPropertyName("typ")]
         public RSPOTypeSchema? Typ { get; set; }
 
-        [JsonPropertyName("faks")]
-        public string? Faks { get; set; }
-
         [JsonPropertyName("email")]
         public required string Email { get; set; }
 
@@ -21,9 +18,6 @@ namespace mapa_back.Models.RSPOApi
 
         [JsonPropertyName("ulica")]
         public required string Ulica { get; set; }
-
-        [JsonPropertyName("poczta")]
-        public string? Poczta { get; set; }
 
         [JsonPropertyName("powiat")]
         public required string Powiat { get; set; }
@@ -73,17 +67,8 @@ namespace mapa_back.Models.RSPOApi
         [JsonPropertyName("dataLikwidacji")]
         public DateTime? DataLikwidacji { get; set; }
 
-        [JsonPropertyName("jezykiNauczane")]
-        public List<string>? JezykiNauczane { get; set; }
-
-        [JsonPropertyName("terenySportowe")]
-        public string? TerenySportowe { get; set; }
-
         [JsonPropertyName("kategoriaUczniow")]
         public RSPOTypeSchema? KategoriaUczniow { get; set; }
-
-        [JsonPropertyName("strukturaMiejsce")]
-        public string? StrukturaMiejsce { get; set; }
 
         [JsonPropertyName("specyfikaPlacowki")]
         public string? SpecyfikaPlacowki { get; set; }
@@ -94,29 +79,11 @@ namespace mapa_back.Models.RSPOApi
         [JsonPropertyName("stronaInternetowa")]
         public string? StronaInternetowa { get; set; }
 
-        [JsonPropertyName("organProwadzacyNip")]
-        public string? OrganProwadzacyNip { get; set; }
-
-        [JsonPropertyName("organProwadzacyTyp")]
-        public string? OrganProwadzacyTyp { get; set; }
-
         [JsonPropertyName("gminaRodzaj")]
         public string? RodzajMiejscowosci { get; set; }
 
-        [JsonPropertyName("podmiotNadrzednyTyp")]
-        public string? PodmiotNadrzednyTyp { get; set; }
-
         [JsonPropertyName("gminaKodTERYT")]
         public string? KodTerytorialnyGmina { get; set; }
-
-        [JsonPropertyName("organProwadzacyGmina")]
-        public string? OrganProwadzacyGmina { get; set; }
-
-        [JsonPropertyName("organProwadzacyNazwa")]
-        public string? OrganProwadzacyNazwa { get; set; }
-
-        [JsonPropertyName("organProwadzacyRegon")]
-        public string? OrganProwadzacyRegon { get; set; }
 
         [JsonPropertyName("podmiotNadrzednyRspo")]
         public string? PodmiotNadrzednyRspo { get; set; }
@@ -127,17 +94,11 @@ namespace mapa_back.Models.RSPOApi
         [JsonPropertyName("organProwadzacyPowiat")]
         public string? OrganProwadzacyPowiat { get; set; }
 
-        [JsonPropertyName("podmiotNadrzedny")]
-        public string? PodmiotNadrzednyNazwa { get; set; }
-
         [JsonPropertyName("miejscowoscKodTERYT")]
         public string? KodTerytorialnyMiejscowosc { get; set; }
 
         [JsonPropertyName("wojewodztwoKodTERYT")]
         public string? KodTerytorialnyWojewodztwo { get; set; }
-
-        [JsonPropertyName("organProwadzacyWojewodztwo")]
-        public string? OrganProwadzacyWojewodztwo { get; set; }
 
         [JsonPropertyName("dataRozpoczecia")]
         public DateTime? DataRozpoczeciaDzialalnosci { get; set; }

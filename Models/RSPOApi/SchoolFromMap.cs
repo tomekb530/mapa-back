@@ -1,10 +1,10 @@
-﻿using NetTopologySuite.Geometries;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using NetTopologySuite.Geometries;
 
-namespace mapa_back.Models
+namespace mapa_back.Models.RSPOApi
 {
-    public class School
+    public class SchoolFromMap
     {
         [Key]
         [Column("id")]
@@ -16,6 +16,6 @@ namespace mapa_back.Models
         public string BusinessData { get; set; }
 
         [Column("geography")]
-        public Point Geography { get; set; } 
+        public Point Geography { get; set; }
     }
 }

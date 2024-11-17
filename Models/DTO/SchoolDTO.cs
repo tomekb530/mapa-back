@@ -7,8 +7,6 @@ namespace mapa_back.Models.DTO
     {
         public string? Typ { get; set; }
 
-        public string? Faks { get; set; }
-
         public string Email { get; set; }
 
         public string Gmina { get; set; }
@@ -16,8 +14,6 @@ namespace mapa_back.Models.DTO
         public string Nazwa { get; set; }
 
         public string Ulica { get; set; }
-
-        public string? Poczta { get; set; }
 
         public string Powiat { get; set; }
 
@@ -47,13 +43,7 @@ namespace mapa_back.Models.DTO
 
         public DateTime? DataLikwidacji { get; set; }
 
-        public List<string>? JezykiNauczane { get; set; }
-
-        public string? TerenySportowe { get; set; }
-
         public string? KategoriaUczniow { get; set; }
-
-        public string? StrukturaMiejsce { get; set; }
 
         public string? SpecyfikaPlacowki { get; set; }
 
@@ -61,21 +51,9 @@ namespace mapa_back.Models.DTO
 
         public string? StronaInternetowa { get; set; }
 
-        public string? OrganProwadzacyNip { get; set; }
-
-        public string? OrganProwadzacyTyp { get; set; }
-
         public string? RodzajMiejscowosci { get; set; }
 
-        public string? PodmiotNadrzednyTyp { get; set; }
-
         public string? KodTerytorialnyGmina { get; set; }
-
-        public string? OrganProwadzacyGmina { get; set; }
-
-        public string? OrganProwadzacyNazwa { get; set; }
-
-        public string? OrganProwadzacyRegon { get; set; }
 
         public string? PodmiotNadrzednyRspo { get; set; }
 
@@ -83,13 +61,9 @@ namespace mapa_back.Models.DTO
 
         public string? OrganProwadzacyPowiat { get; set; }
 
-        public string? PodmiotNadrzednyNazwa { get; set; }
-
         public string? KodTerytorialnyMiejscowosc { get; set; }
 
         public string? KodTerytorialnyWojewodztwo { get; set; }
-
-        public string? OrganProwadzacyWojewodztwo { get; set; }
 
         public DateTime? DataRozpoczeciaDzialalnosci { get; set; }
 
