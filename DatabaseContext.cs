@@ -1,4 +1,5 @@
 ﻿using mapa_back.Models;
+using mapa_back.Models.DTO;
 using mapa_back.Models.RSPOApi;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;

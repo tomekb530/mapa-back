@@ -54,14 +54,13 @@ namespace mapa_back.Services
         {
             try
             {
-                List<SchoolApi> placowki = new List<SchoolApi>();
                 using (JsonDocument doc = JsonDocument.Parse(responseBody))
                 {
                     JsonElement root = doc.RootElement;
                     JsonElement schoolListJson = root.GetProperty("hydra:member");
-                    placowki = JsonSerializer.Deserialize<List<SchoolApi>>(schoolListJson);
+                    List<SchoolApi> placowki = JsonSerializer.Deserialize<List<SchoolApi>>(schoolListJson) ?? new List<SchoolApi>();
+                    return placowki;
                 }
-                return placowki;
             }
             catch(Exception)
             {
@@ -72,7 +71,7 @@ namespace mapa_back.Services
         {
             try
             {
-                School schoolInDatabase = await _dbContext.Schools.FirstOrDefaultAsync(element => element.RspoNumber == rspoNumber);
+                SchoolFromRSPO schoolInDatabase = await _dbContext.SchoolsFromRSPO.FirstOrDefaultAsync(element => element.RspoNumber == rspoNumber) ?? throw new RSPOToDatabaseException("Cannot find element in database");
                 if(schoolInDatabase!=null)
                 { 
                     schoolInDatabase.Geography = geography;
@@ -80,7 +79,7 @@ namespace mapa_back.Services
                 }
                 else
                 {
-                    _dbContext.Schools.Add(new School
+                    _dbContext.SchoolsFromRSPO.Add(new SchoolFromRSPO
                     {
                         BusinessData = businessDataJson,
                         Geography = geography,
@@ -101,9 +100,6 @@ namespace mapa_back.Services
                 Point point = new Point(new Coordinate { X = school.Geolokalizacja.Longitude, Y = school.Geolokalizacja.Latitude });
                 string businessDataJson = JsonSerializer.Serialize(businessData);
                 await SaveSingleSchoolToDatabase(point, businessDataJson, school.RspoNumer);
-                businessDataJson = null;
-                businessData = null;
-                point = null;
             }
             await _dbContext.SaveChangesAsync();
             GC.Collect();
@@ -141,9 +137,6 @@ namespace mapa_back.Services
                         string responseBody = await response.Content.ReadAsStringAsync();
                         List<SchoolApi> schools = GetSchoolsFromResponse(responseBody);
                         await SaveSchoolsToDatabase(schools);
-                        response.Dispose();
-                        responseBody = null;
-                        schools = null;
                     }
                 }
                 catch(RSPOToDatabaseException)

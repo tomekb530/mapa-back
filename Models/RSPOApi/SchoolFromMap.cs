@@ -13,7 +13,7 @@ namespace mapa_back.Models.RSPOApi
         public int RspoNumber { get; set; }
 
         [Column("business_data")]
-        public string BusinessData { get; set; }
+        public string BusinessData { get; set; } = string.Empty;
 
         [Column("geography")]
         public Point Geography { get; set; }

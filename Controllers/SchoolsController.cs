@@ -1,4 +1,5 @@
 ﻿using mapa_back.Exceptions;
+using mapa_back.Models;
 using mapa_back.Models.DTO;
 using mapa_back.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -53,10 +54,10 @@ namespace mapa_back.Controllers
         {
             try
             {
-                long productCount = await schoolsService.GetSchoolsCount();
-                if(productCount > 0)
+                long schoolsCount = await schoolsService.GetSchoolsCount();
+                if(schoolsCount > 0)
                 {
-                    return Ok(productCount);
+                    return Ok(schoolsCount);
                 }
                 return NotFound();
             }
@@ -87,7 +88,11 @@ namespace mapa_back.Controllers
                 }
                 return NotFound();
             }
-            catch(ArgumentException ex)
+            catch(SchoolServiceException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            catch (ArgumentException ex)
             {
                 return StatusCode(StatusCodes.Status400BadRequest, ex.Message);
             }
@@ -154,6 +159,67 @@ namespace mapa_back.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred while trying to delete single school. Try again later");
             }
         }
+        [HttpGet("GetChanges")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<List<ChangedSchool>>> GetChanges(int size, int page)
+        {
+            try
+            {
+                List<ChangedSchool> changedSchools = await schoolsService.GetChangedSchoolsList(size, page);
+                if (changedSchools.Any())
+                {
+                    return Ok(changedSchools);
+                }
+                return NoContent();
+            }
+            catch(ArgumentException ex)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, ex.Message);
+            }
+            catch (SchoolServiceException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            catch(DatabaseException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred while trying to get changes. Try again later");
+            }
+        }
+
+        [HttpGet("GetChangesCount")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<long>> GetChangesCount()
+        {
+            try
+            {
+                long changesCount = await schoolsService.GetChangesCount();
+                if (changesCount > 0)
+                {
+                    return Ok(changesCount);
+                }
+                return NotFound();
+            }
+            catch (DatabaseException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred while trying to get changes count from database. Try again later");
+            }
+        }
+
 
     }
 }
