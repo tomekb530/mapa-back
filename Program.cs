@@ -23,6 +23,7 @@ builder.Services.AddScoped<IRSPOApiService, RSPOApiService>();
 builder.Services.AddScoped<ISchoolsService, SchoolsService>();
 builder.Services.AddAutoMapper(typeof(MapToBusinessData));
 builder.Services.AddHttpClient();
+builder.Host.UseSystemd();
 
 var app = builder.Build();
 
