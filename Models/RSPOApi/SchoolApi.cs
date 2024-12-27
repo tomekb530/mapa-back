@@ -103,6 +103,9 @@ namespace mapa_back.Models.RSPOApi
         [JsonPropertyName("dataRozpoczecia")]
         public DateTime? DataRozpoczeciaDzialalnosci { get; set; }
 
+        [JsonPropertyName("podmiotProwadzacy")]
+        public List<RSPOTypeSchema> PodmiotProwadzacy { get; set; }
+
         [JsonPropertyName("geolokalizacja")]
         public required Geolokalizacja Geolokalizacja { get; set; }
 

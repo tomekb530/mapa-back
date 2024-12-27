@@ -164,18 +164,18 @@ namespace mapa_back.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<List<ChangedSchool>>> GetChanges(int size, int page)
+        public async Task<ActionResult<ChangedSchools>> GetChanges(int size, int page)
         {
             try
             {
-                List<ChangedSchool> changedSchools = await schoolsService.GetChangedSchoolsList(size, page);
-                if (changedSchools.Any())
+                ChangedSchools changedSchools = await schoolsService.GetChangedSchoolsList(size, page);
+                if (changedSchools.SchoolsBeforeChanges.Any() && changedSchools.SchoolsAfterChanges.Any())
                 {
                     return Ok(changedSchools);
                 }
                 return NoContent();
             }
-            catch(ArgumentException ex)
+            catch (ArgumentException ex)
             {
                 return StatusCode(StatusCodes.Status400BadRequest, ex.Message);
             }
@@ -183,7 +183,7 @@ namespace mapa_back.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
-            catch(DatabaseException ex)
+            catch (DatabaseException ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
 
@@ -193,33 +193,5 @@ namespace mapa_back.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred while trying to get changes. Try again later");
             }
         }
-
-        [HttpGet("GetChangesCount")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<long>> GetChangesCount()
-        {
-            try
-            {
-                long changesCount = await schoolsService.GetChangesCount();
-                if (changesCount > 0)
-                {
-                    return Ok(changesCount);
-                }
-                return NotFound();
-            }
-            catch (DatabaseException ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-            catch (Exception)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred while trying to get changes count from database. Try again later");
-            }
-        }
-
-
     }
 }

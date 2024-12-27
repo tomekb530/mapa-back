@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using mapa_back.Exceptions;
-using mapa_back.Mappers;
 using mapa_back.Models;
 using mapa_back.Models.DTO;
 using mapa_back.Models.RSPOApi;
@@ -14,12 +13,10 @@ namespace mapa_back.Services
     public class RSPOApiService : IRSPOApiService
     {
         private readonly DatabaseContext _dbContext;
-        private readonly IMapper _mapper;
         private readonly HttpClient _httpClient;
-        public RSPOApiService(DatabaseContext dbContext, IMapper mapper, HttpClient httpClient)
+        public RSPOApiService(DatabaseContext dbContext, HttpClient httpClient)
         {
             _dbContext = dbContext;
-            _mapper = mapper;
             _httpClient = httpClient;
         }
         
@@ -67,26 +64,58 @@ namespace mapa_back.Services
                 throw new RSPOToDatabaseException("Unexpected error occurred while trying to GetSchoolsFromResponse JSON");
             }
         }
-        private async Task SaveSingleSchoolToDatabase(Point geography, string businessDataJson, int rspoNumber)
+        private async Task SaveSingleSchoolToDatabase(Point geography, SchoolApi schoolFromApi)
         {
             try
             {
-                SchoolFromRSPO schoolInDatabase = await _dbContext.SchoolsFromRSPO.FirstOrDefaultAsync(element => element.RspoNumber == rspoNumber) ?? throw new RSPOToDatabaseException("Cannot find element in database");
-                if(schoolInDatabase!=null)
-                { 
-                    schoolInDatabase.Geography = geography;
-                    schoolInDatabase.BusinessData = businessDataJson;
-                }
+                SchoolFromRSPO school;
+                bool isNewSchool;
+                isNewSchool = !await _dbContext.SchoolsFromRSPO.AnyAsync(element => element.RspoNumber == schoolFromApi.RspoNumer);
+                if(isNewSchool)
+                {
+					school = new SchoolFromRSPO
+                    {
+                        RspoNumber = schoolFromApi.RspoNumer
+                    };
+					_dbContext.SchoolsFromRSPO.Add(school);
+				}
                 else
                 {
-                    _dbContext.SchoolsFromRSPO.Add(new SchoolFromRSPO
-                    {
-                        BusinessData = businessDataJson,
-                        Geography = geography,
-                        RspoNumber = rspoNumber
-                    });
+					school = await _dbContext.SchoolsFromRSPO.FirstOrDefaultAsync(element => element.RspoNumber == schoolFromApi.RspoNumer);
                 }
-            }
+				school.Geography = geography;
+				school.Typ = schoolFromApi.Typ.Nazwa;
+				school.StatusPublicznosc = schoolFromApi.StatusPublicznosc.Nazwa;
+				school.Nazwa = schoolFromApi.Nazwa;
+				school.Wojewodztwo = schoolFromApi.Wojewodztwo;
+				school.KodTerytorialnyWojewodztwo = schoolFromApi.KodTerytorialnyWojewodztwo;
+				school.Gmina = schoolFromApi.Gmina;
+				school.KodTerytorialnyGmina = schoolFromApi.KodTerytorialnyGmina;
+				school.Powiat = schoolFromApi.Powiat;
+				school.KodTerytorialnyPowiat = schoolFromApi.KodTerytorialnyPowiat;
+				school.OrganProwadzacyPowiat = schoolFromApi.OrganProwadzacyPowiat;
+				school.Miejscowosc = schoolFromApi.Miejscowosc;
+				school.RodzajMiejscowosci = schoolFromApi.RodzajMiejscowosci;
+				school.KodTerytorialnyMiejscowosc = schoolFromApi.KodTerytorialnyMiejscowosc;
+				school.KodPocztowy = schoolFromApi.KodPocztowy;
+				school.Ulica = schoolFromApi.Ulica;
+				school.NumerBudynku = schoolFromApi.NumerBudynku;
+				school.NumerLokalu = schoolFromApi.NumerLokalu;
+				school.Email = schoolFromApi.Email;
+				school.Telefon = schoolFromApi.Telefon;
+				school.StronaInternetowa = schoolFromApi.StronaInternetowa;
+				school.Dyrektor = schoolFromApi.Dyrektor;
+				school.PodmiotNadrzednyRSPO = schoolFromApi.PodmiotNadrzednyRspo;
+				school.NipPodmiotu = schoolFromApi.NipPodmiotu;
+				school.RegonPodmiotu = schoolFromApi.RegonPodmiotu;
+				school.DataRozpoczeciaDzialalnosci = schoolFromApi.DataRozpoczeciaDzialalnosci;
+				school.DataZalozenia = schoolFromApi.DataZalozenia;
+				school.DataLikwidacji = schoolFromApi.DataLikwidacji;
+				school.LiczbaUczniow = schoolFromApi.LiczbaUczniow;
+				school.KategoriaUczniow = schoolFromApi.KategoriaUczniow.Nazwa;
+				school.SpecyfikaPlacowki = schoolFromApi.SpecyfikaPlacowki;
+                school.PodmiotProwadzacy.AddRange(schoolFromApi.PodmiotProwadzacy.Select(x => x.Nazwa).ToList());
+			}
             catch(Exception)
             {
                 throw new RSPOToDatabaseException("Unexpected error occurred while trying to save single school data to database");
@@ -96,22 +125,16 @@ namespace mapa_back.Services
         {
             foreach (var school in schools)
             {
-                BusinessDataDTO businessData = MapToBusinessData(school);
                 Point point = new Point(new Coordinate { X = school.Geolokalizacja.Longitude, Y = school.Geolokalizacja.Latitude });
-                string businessDataJson = JsonSerializer.Serialize(businessData);
-                await SaveSingleSchoolToDatabase(point, businessDataJson, school.RspoNumer);
+                await SaveSingleSchoolToDatabase(point, school);
             }
             await _dbContext.SaveChangesAsync();
             GC.Collect();
             GC.WaitForPendingFinalizers();
         }
-        private BusinessDataDTO MapToBusinessData(SchoolApi schoolApi)
-        {
-            return _mapper.Map<BusinessDataDTO>(schoolApi);
-        }
         public async Task SyncDataFromRSPOApi()
         {
-            string url = "https://api-rspo.mein.gov.pl/api/placowki/?page=1";
+            string url = "https://api-rspo.men.gov.pl/api/placowki/?page=1";
             int numberOfPages = 0;
             try
             {
@@ -124,13 +147,13 @@ namespace mapa_back.Services
             }
             catch (Exception)
             {
-                throw new RSPOToDatabaseException("Unexpected error occurred while trying to get data from RSPO API");
+                throw new RSPOToDatabaseException("Unexpected error occurred while trying to get data from RSPO API. Check if RSPO Api changed URL");
             }
             for (int i = 1; i <= numberOfPages; i++)
             {
                 try
                 {
-                    url = $"https://api-rspo.mein.gov.pl/api/placowki/?page={i}";
+                    url = $"https://api-rspo.men.gov.pl/api/placowki/?page={i}";
                     using (HttpResponseMessage response = await _httpClient.GetAsync(url,HttpCompletionOption.ResponseHeadersRead))
                     {
                         response.EnsureSuccessStatusCode();
