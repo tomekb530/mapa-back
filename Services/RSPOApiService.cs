@@ -55,8 +55,8 @@ namespace mapa_back.Services
                 {
                     JsonElement root = doc.RootElement;
                     JsonElement schoolListJson = root.GetProperty("hydra:member");
-                    List<SchoolApi> placowki = JsonSerializer.Deserialize<List<SchoolApi>>(schoolListJson) ?? new List<SchoolApi>();
-                    return placowki;
+                    List<SchoolApi> schools = JsonSerializer.Deserialize<List<SchoolApi>>(schoolListJson) ?? new List<SchoolApi>();
+                    return schools;
                 }
             }
             catch(Exception)
@@ -70,52 +70,47 @@ namespace mapa_back.Services
             {
                 SchoolFromRSPO school;
                 bool isNewSchool;
-                isNewSchool = !await _dbContext.SchoolsFromRSPO.AnyAsync(element => element.RspoNumber == schoolFromApi.RspoNumer);
+                isNewSchool = !await _dbContext.SchoolsFromRSPO.AnyAsync(element => element.NumerRspo == schoolFromApi.NumerRspo);
                 if(isNewSchool)
                 {
 					school = new SchoolFromRSPO
                     {
-                        RspoNumber = schoolFromApi.RspoNumer
+                        NumerRspo = schoolFromApi.NumerRspo
                     };
 					_dbContext.SchoolsFromRSPO.Add(school);
 				}
                 else
                 {
-					school = await _dbContext.SchoolsFromRSPO.FirstOrDefaultAsync(element => element.RspoNumber == schoolFromApi.RspoNumer);
+					school = await _dbContext.SchoolsFromRSPO.FirstOrDefaultAsync(element => element.NumerRspo == schoolFromApi.NumerRspo);
                 }
 				school.Geography = geography;
-				school.Typ = schoolFromApi.Typ.Nazwa;
-				school.StatusPublicznosc = schoolFromApi.StatusPublicznosc.Nazwa;
+				school.Typ = schoolFromApi.Typ?.Nazwa;
+				school.StatusPublicznoPrawny = schoolFromApi.StatusPublicznoPrawny?.Nazwa;
 				school.Nazwa = schoolFromApi.Nazwa;
 				school.Wojewodztwo = schoolFromApi.Wojewodztwo;
-				school.KodTerytorialnyWojewodztwo = schoolFromApi.KodTerytorialnyWojewodztwo;
 				school.Gmina = schoolFromApi.Gmina;
-				school.KodTerytorialnyGmina = schoolFromApi.KodTerytorialnyGmina;
 				school.Powiat = schoolFromApi.Powiat;
-				school.KodTerytorialnyPowiat = schoolFromApi.KodTerytorialnyPowiat;
-				school.OrganProwadzacyPowiat = schoolFromApi.OrganProwadzacyPowiat;
 				school.Miejscowosc = schoolFromApi.Miejscowosc;
-				school.RodzajMiejscowosci = schoolFromApi.RodzajMiejscowosci;
-				school.KodTerytorialnyMiejscowosc = schoolFromApi.KodTerytorialnyMiejscowosc;
-				school.KodPocztowy = schoolFromApi.KodPocztowy;
+				school.GminaRodzaj = schoolFromApi.GminaRodzaj;
+                school.KodPocztowy = schoolFromApi.KodPocztowy;
 				school.Ulica = schoolFromApi.Ulica;
 				school.NumerBudynku = schoolFromApi.NumerBudynku;
 				school.NumerLokalu = schoolFromApi.NumerLokalu;
 				school.Email = schoolFromApi.Email;
 				school.Telefon = schoolFromApi.Telefon;
 				school.StronaInternetowa = schoolFromApi.StronaInternetowa;
-				school.Dyrektor = schoolFromApi.Dyrektor;
-				school.PodmiotNadrzednyRSPO = schoolFromApi.PodmiotNadrzednyRspo;
-				school.NipPodmiotu = schoolFromApi.NipPodmiotu;
-				school.RegonPodmiotu = schoolFromApi.RegonPodmiotu;
-				school.DataRozpoczeciaDzialalnosci = schoolFromApi.DataRozpoczeciaDzialalnosci;
+				school.DyrektorImie = schoolFromApi.DyrektorImie;
+                school.DyrektorNazwisko = schoolFromApi.DyrektorNazwisko;
+                school.Nip = schoolFromApi.Nip;
+				school.Regon = schoolFromApi.Regon;
+				school.DataRozpoczecia = schoolFromApi.DataRozpoczecia;
 				school.DataZalozenia = schoolFromApi.DataZalozenia;
 				school.DataLikwidacji = schoolFromApi.DataLikwidacji;
 				school.LiczbaUczniow = schoolFromApi.LiczbaUczniow;
-				school.KategoriaUczniow = schoolFromApi.KategoriaUczniow.Nazwa;
-				school.SpecyfikaPlacowki = schoolFromApi.SpecyfikaPlacowki;
-                school.PodmiotProwadzacy.AddRange(schoolFromApi.PodmiotProwadzacy.Select(x => x.Nazwa).ToList());
-			}
+				school.KategoriaUczniow = schoolFromApi.KategoriaUczniow?.Nazwa;
+				school.SpecyfikaSzkoly = schoolFromApi.SpecyfikaSzkoly;
+                school.PodmiotProwadzacy.AddRange(schoolFromApi.PodmiotProwadzacy.Select(x => new Models.ManagingEntity(x.Id, x.Nazwa, x.Typ, x.Regon)).ToList());
+            }
             catch(Exception)
             {
                 throw new RSPOToDatabaseException("Unexpected error occurred while trying to save single school data to database");

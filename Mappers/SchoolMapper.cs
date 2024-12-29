@@ -1,6 +1,7 @@
 ﻿using mapa_back.Models.DTO;
 using mapa_back.Models;
 using NetTopologySuite.Geometries;
+using mapa_back.Models.RSPOApi;
 
 namespace mapa_back.Mappers
 {
@@ -11,20 +12,15 @@ namespace mapa_back.Mappers
 			return new SchoolDTO
 			{
 				Id = school.Id,
-				RspoNumber = school.RspoNumber,
+				NumerRspo = school.NumerRspo,
 				Typ = school.Typ,
-				StatusPublicznosc = school.StatusPublicznosc,
+				StatusPublicznoPrawny = school.StatusPublicznoPrawny,
 				Nazwa = school.Nazwa,
 				Wojewodztwo = school.Wojewodztwo,
-				KodTerytorialnyWojewodztwo = school.KodTerytorialnyWojewodztwo,
 				Gmina = school.Gmina,
-				KodTerytorialnyGmina = school.KodTerytorialnyGmina,
 				Powiat = school.Powiat,
-				KodTerytorialnyPowiat = school.KodTerytorialnyPowiat,
-				OrganProwadzacyPowiat = school.OrganProwadzacyPowiat,
 				Miejscowosc = school.Miejscowosc,
-				RodzajMiejscowosci = school.RodzajMiejscowosci,
-				KodTerytorialnyMiejscowosc = school.KodTerytorialnyMiejscowosc,
+				GminaRodzaj = school.GminaRodzaj,
 				KodPocztowy = school.KodPocztowy,
 				Ulica = school.Ulica,
 				NumerBudynku = school.NumerBudynku,
@@ -32,17 +28,18 @@ namespace mapa_back.Mappers
 				Email = school.Email,
 				Telefon = school.Telefon,
 				StronaInternetowa = school.StronaInternetowa,
-				Dyrektor = school.Dyrektor,
-				PodmiotNadrzednyRSPO = school.PodmiotNadrzednyRSPO,
-				NipPodmiotu = school.NipPodmiotu,
-				RegonPodmiotu = school.RegonPodmiotu,
-				DataRozpoczeciaDzialalnosci = school.DataRozpoczeciaDzialalnosci ?? DateTime.MinValue,
+				DyrektorImie = school.DyrektorImie,
+                DyrektorNazwisko = school.DyrektorNazwisko,
+                Nip = school.Nip,
+				Regon = school.Regon,
+				DataRozpoczecia = school.DataRozpoczecia,
 				DataZalozenia = school.DataZalozenia,
+				DataZakonczenia = school.DataZakonczenia,
 				DataLikwidacji = school.DataLikwidacji,
-				LiczbaUczniow = school.LiczbaUczniow ?? 0,
+				LiczbaUczniow = school.LiczbaUczniow,
 				KategoriaUczniow = school.KategoriaUczniow,
-				SpecyfikaPlacowki = school.SpecyfikaPlacowki,
-				PodmiotProwadzacy = school.PodmiotProwadzacy,
+				SpecyfikaSzkoly = school.SpecyfikaSzkoly,
+				PodmiotProwadzacy = school.PodmiotProwadzacy.Select(x => new ManagingEntityDTO(x.Id, x.Nazwa, x.Typ?.Nazwa, x.Regon)).ToList(),
 				Geography = MapGeographyToDTO(school.Geography)
 			};
 		}
@@ -51,44 +48,40 @@ namespace mapa_back.Mappers
 		{
 			return new SchoolDTO
 			{
-				Id = school.Id,
-				RspoNumber = school.RspoNumber,
-				Typ = school.Typ,
-				StatusPublicznosc = school.StatusPublicznosc,
-				Nazwa = school.Nazwa,
-				Wojewodztwo = school.Wojewodztwo,
-				KodTerytorialnyWojewodztwo = school.KodTerytorialnyWojewodztwo,
-				Gmina = school.Gmina,
-				KodTerytorialnyGmina = school.KodTerytorialnyGmina,
-				Powiat = school.Powiat,
-				KodTerytorialnyPowiat = school.KodTerytorialnyPowiat,
-				OrganProwadzacyPowiat = school.OrganProwadzacyPowiat,
-				Miejscowosc = school.Miejscowosc,
-				RodzajMiejscowosci = school.RodzajMiejscowosci,
-				KodTerytorialnyMiejscowosc = school.KodTerytorialnyMiejscowosc,
-				KodPocztowy = school.KodPocztowy,
-				Ulica = school.Ulica,
-				NumerBudynku = school.NumerBudynku,
-				NumerLokalu = school.NumerLokalu,
-				Email = school.Email,
-				Telefon = school.Telefon,
-				StronaInternetowa = school.StronaInternetowa,
-				Dyrektor = school.Dyrektor,
-				PodmiotNadrzednyRSPO = school.PodmiotNadrzednyRSPO,
-				NipPodmiotu = school.NipPodmiotu,
-				RegonPodmiotu = school.RegonPodmiotu,
-				DataRozpoczeciaDzialalnosci = school.DataRozpoczeciaDzialalnosci,
-				DataZalozenia = school.DataZalozenia,
-				DataLikwidacji = school.DataLikwidacji,
-				LiczbaUczniow = school.LiczbaUczniow,
-				KategoriaUczniow = school.KategoriaUczniow,
-				SpecyfikaPlacowki = school.SpecyfikaPlacowki,
-				PodmiotProwadzacy = school.PodmiotProwadzacy,
-				Geography = MapGeographyToDTO(school.Geography)
-			};
+                Id = school.Id,
+                NumerRspo = school.NumerRspo,
+                Typ = school.Typ,
+                StatusPublicznoPrawny = school.StatusPublicznoPrawny,
+                Nazwa = school.Nazwa,
+                Wojewodztwo = school.Wojewodztwo,
+                Gmina = school.Gmina,
+                Powiat = school.Powiat,
+                Miejscowosc = school.Miejscowosc,
+                GminaRodzaj = school.GminaRodzaj,
+                KodPocztowy = school.KodPocztowy,
+                Ulica = school.Ulica,
+                NumerBudynku = school.NumerBudynku,
+                NumerLokalu = school.NumerLokalu,
+                Email = school.Email,
+                Telefon = school.Telefon,
+                StronaInternetowa = school.StronaInternetowa,
+                DyrektorImie = school.DyrektorImie,
+                DyrektorNazwisko = school.DyrektorNazwisko,
+                Nip = school.Nip,
+                Regon = school.Regon,
+                DataRozpoczecia = school.DataRozpoczecia,
+                DataZalozenia = school.DataZalozenia,
+                DataZakonczenia = school.DataZakonczenia,
+                DataLikwidacji = school.DataLikwidacji,
+                LiczbaUczniow = school.LiczbaUczniow,
+                KategoriaUczniow = school.KategoriaUczniow,
+                SpecyfikaSzkoly = school.SpecyfikaSzkoly,
+                PodmiotProwadzacy = school.PodmiotProwadzacy.Select(x => new ManagingEntityDTO(x.Id, x.Nazwa, x.Typ?.Nazwa, x.Regon)).ToList(),
+                Geography = MapGeographyToDTO(school.Geography)
+            };
 		}
 
-		private static GeographyDTO MapGeographyToDTO(Point geography)
+        private static GeographyDTO? MapGeographyToDTO(Point geography)
 		{
 			if (geography == null) return null;
 

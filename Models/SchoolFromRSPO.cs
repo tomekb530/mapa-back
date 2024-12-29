@@ -8,104 +8,119 @@ namespace mapa_back.Models
     {
         [Key]
         [Column("id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Required]
         public int Id { get; set; }
-        [Column("rsponumer")]
-        public int RspoNumber { get; set; }
+
+        [Column("numer_rspo")]
+        [Required]
+        public int NumerRspo { get; set; }
 
         [Column("geography")]
+        [Required]
         public Point Geography { get; set; }
 
 		[Column("typ")]
-		public string Typ { get; set; }
+        [MaxLength(128)]
+        public string? Typ { get; set; }
 
-		[Column("statuspublicznosc")]
-		public string StatusPublicznosc { get; set; }
+		[Column("status_publiczno_prawny")]
+        [MaxLength(128)]
+        public string? StatusPublicznoPrawny { get; set; }
 
 		[Column("nazwa")]
-		public string Nazwa { get; set; }
+        [MaxLength(256)]
+        [Required]
+        public string Nazwa { get; set; }
 
 		[Column("wojewodztwo")]
-		public string Wojewodztwo { get; set; }
-
-		[Column("kodterytorialnywojewodztwo")]
-		public string KodTerytorialnyWojewodztwo { get; set; }
+        [MaxLength(32)]
+        public string? Wojewodztwo { get; set; }
 
 		[Column("gmina")]
-		public string Gmina { get; set; }
-
-		[Column("kodterytorialnygmina")]
-		public string KodTerytorialnyGmina { get; set; }
+        [MaxLength(64)]
+        public string? Gmina { get; set; }
 
 		[Column("powiat")]
-		public string Powiat { get; set; }
-
-		[Column("kodterytorialnypowiat")]
-		public string KodTerytorialnyPowiat { get; set; }
-
-		[Column("organprowadzacypowiat")]
-		public string OrganProwadzacyPowiat { get; set; }
+        [MaxLength(32)]
+        public string? Powiat { get; set; }
 
 		[Column("miejscowosc")]
-		public string Miejscowosc { get; set; }
+        [MaxLength(64)]
+        public string? Miejscowosc { get; set; }
 
-		[Column("rodzajmiejscowosci")]
-		public string RodzajMiejscowosci { get; set; }
+		[Column("gmina_rodzaj")]
+        [MaxLength(32)]
+        public string? GminaRodzaj { get; set; }
 
-		[Column("kodterytorialnymiejscowosc")]
-		public string KodTerytorialnyMiejscowosc { get; set; }
-
-		[Column("kodpocztowy")]
-		public string KodPocztowy { get; set; }
+		[Column("kod_pocztowy")]
+        [MaxLength(16)]
+        public string? KodPocztowy { get; set; }
 
 		[Column("ulica")]
-		public string Ulica { get; set; }
+        [MaxLength(128)]
+        public string? Ulica { get; set; }
 
-		[Column("numerbudynku")]
-		public string NumerBudynku { get; set; }
+		[Column("numer_budynku")]
+        [MaxLength(32)]
+        public string? NumerBudynku { get; set; }
 
-		[Column("numerlokalu")]
-		public string NumerLokalu { get; set; }
+		[Column("numer_lokalu")]
+        [MaxLength(32)]
+        public string? NumerLokalu { get; set; }
 
 		[Column("email")]
-		public string Email { get; set; }
+        [MaxLength(128)]
+        public string? Email { get; set; }
 
 		[Column("telefon")]
-		public string Telefon { get; set; }
+        [MaxLength(16)]
+        public string? Telefon { get; set; }
 
-		[Column("stronainternetowa")]
-		public string StronaInternetowa { get; set; }
+		[Column("strona_internetowa")]
+        [MaxLength(256)]
+        public string? StronaInternetowa { get; set; }
 
-		[Column("dyrektor")]
-		public string Dyrektor { get; set; }
+		[Column("dyrektor_imie")]
+        [MaxLength(32)]
+        public string? DyrektorImie { get; set; }
 
-		[Column("podmiotnadrzednyrspo")]
-		public string PodmiotNadrzednyRSPO { get; set; }
+        [Column("dyrektor_nazwisko")]
+        [MaxLength(32)]
+        public string? DyrektorNazwisko { get; set; }
 
-		[Column("nippodmiotu")]
-		public string NipPodmiotu { get; set; }
+		[Column("nip")]
+        [MaxLength(10)]
+        public string? Nip { get; set; }
 
-		[Column("regonpodmiotu")]
-		public string RegonPodmiotu { get; set; }
+		[Column("regon")]
+        [MaxLength(14)]
+        public string? Regon { get; set; }
 
-		[Column("datarozpoczeciadzialalnosci")]
-		public DateTime? DataRozpoczeciaDzialalnosci { get; set; }
+		[Column("data_rozpoczecia")]
+		public DateTime? DataRozpoczecia { get; set; }
 
-		[Column("datazalozenia")]
-		public DateTime DataZalozenia { get; set; }
+		[Column("data_zalozenia")]
+		public DateTime? DataZalozenia { get; set; }
 
-		[Column("datalikwidacji	")]
+        [Column("data_zakonczenia")]
+        public DateTime? DataZakonczenia { get; set; }
+
+        [Column("data_likwidacji")]
 		public DateTime? DataLikwidacji { get; set; }
 
-		[Column("liczbauczniow")]
+		[Column("liczba_uczniow")]
 		public int? LiczbaUczniow { get; set; }
 
-		[Column("kategoriauczniow")]
-		public string KategoriaUczniow { get; set; }
+		[Column("kategoria_uczniow")]
+        [MaxLength(64)]
+        public string? KategoriaUczniow { get; set; }
 
-		[Column("specyfikaplacowki")]
-		public string SpecyfikaPlacowki { get; set; }
+		[Column("specyfika_szkoly")]
+        [MaxLength(64)]
+        public string? SpecyfikaSzkoly { get; set; }
 
-		[Column("typpodmiotprowadzacy")]
-		public List<string> PodmiotProwadzacy { get; set; }
+		[Column("podmiot_prowadzacy")]
+		public List<ManagingEntity> PodmiotProwadzacy { get; set; }
 	}
 }

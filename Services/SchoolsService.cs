@@ -101,21 +101,16 @@ namespace mapa_back.Services
                 }
                 List<SchoolDTO> schoolsAfterChanges = await _dbContext.SchoolsFromRSPO
                     .Where(schoolFromRSPO => !_dbContext.Schools.Any(school =>
-                    school.RspoNumber == schoolFromRSPO.RspoNumber &&
+                    school.NumerRspo == schoolFromRSPO.NumerRspo &&
                     school.Geography.Equals(schoolFromRSPO.Geography) &&
                     school.Typ == schoolFromRSPO.Typ &&
-                    school.StatusPublicznosc == schoolFromRSPO.StatusPublicznosc &&
+                    school.StatusPublicznoPrawny == schoolFromRSPO.StatusPublicznoPrawny &&
                     school.Nazwa == schoolFromRSPO.Nazwa &&
                     school.Wojewodztwo == schoolFromRSPO.Wojewodztwo &&
-                    school.KodTerytorialnyWojewodztwo == schoolFromRSPO.KodTerytorialnyWojewodztwo &&
                     school.Gmina == schoolFromRSPO.Gmina &&
-                    school.KodTerytorialnyGmina == schoolFromRSPO.KodTerytorialnyGmina &&
                     school.Powiat == schoolFromRSPO.Powiat &&
-                    school.KodTerytorialnyPowiat == schoolFromRSPO.KodTerytorialnyPowiat &&
-                    school.OrganProwadzacyPowiat == schoolFromRSPO.OrganProwadzacyPowiat &&
                     school.Miejscowosc == schoolFromRSPO.Miejscowosc &&
-                    school.RodzajMiejscowosci == schoolFromRSPO.RodzajMiejscowosci &&
-                    school.KodTerytorialnyMiejscowosc == schoolFromRSPO.KodTerytorialnyMiejscowosc &&
+                    school.GminaRodzaj == schoolFromRSPO.GminaRodzaj &&
                     school.KodPocztowy == schoolFromRSPO.KodPocztowy &&
                     school.Ulica == schoolFromRSPO.Ulica &&
                     school.NumerBudynku == schoolFromRSPO.NumerBudynku &&
@@ -123,23 +118,24 @@ namespace mapa_back.Services
                     school.Email == schoolFromRSPO.Email &&
                     school.Telefon == schoolFromRSPO.Telefon &&
                     school.StronaInternetowa == schoolFromRSPO.StronaInternetowa &&
-                    school.Dyrektor == schoolFromRSPO.Dyrektor &&
-                    school.PodmiotNadrzednyRSPO == schoolFromRSPO.PodmiotNadrzednyRSPO &&
-                    school.NipPodmiotu == schoolFromRSPO.NipPodmiotu &&
-                    school.RegonPodmiotu == schoolFromRSPO.RegonPodmiotu &&
-                    school.DataRozpoczeciaDzialalnosci == schoolFromRSPO.DataRozpoczeciaDzialalnosci &&
+                    school.DyrektorImie == schoolFromRSPO.DyrektorImie &&
+                    school.DyrektorNazwisko == schoolFromRSPO.DyrektorNazwisko &&
+                    school.Nip == schoolFromRSPO.Nip &&
+                    school.Regon == schoolFromRSPO.Regon &&
+                    school.DataRozpoczecia == schoolFromRSPO.DataRozpoczecia &&
                     school.DataZalozenia == schoolFromRSPO.DataZalozenia &&
+                    school.DataZakonczenia == schoolFromRSPO.DataZakonczenia &&
                     school.DataLikwidacji == schoolFromRSPO.DataLikwidacji &&
                     school.LiczbaUczniow == schoolFromRSPO.LiczbaUczniow &&
                     school.KategoriaUczniow == schoolFromRSPO.KategoriaUczniow &&
-                    school.SpecyfikaPlacowki == schoolFromRSPO.SpecyfikaPlacowki &&
+                    school.SpecyfikaSzkoly == schoolFromRSPO.SpecyfikaSzkoly &&
                     school.PodmiotProwadzacy.ToHashSet().SetEquals(schoolFromRSPO.PodmiotProwadzacy)))
                     .Skip((pageNumber - 1) * size).Take(size)
-                    .Select(x => SchoolMapper.MapToDTO(x)).OrderBy(x => x.RspoNumber)
+                    .Select(x => SchoolMapper.MapToDTO(x)).OrderBy(x => x.NumerRspo)
                     .ToListAsync();
                 List<SchoolDTO> schoolsBeforeChanges = await _dbContext.Schools
-                    .Where(school => schoolsAfterChanges.Any(element => element.RspoNumber == school.RspoNumber))
-                    .Select(x => SchoolMapper.MapToDTO(x)).OrderBy(element => element.RspoNumber).ToListAsync();
+                    .Where(school => schoolsAfterChanges.Any(element => element.NumerRspo == school.NumerRspo))
+                    .Select(x => SchoolMapper.MapToDTO(x)).OrderBy(element => element.NumerRspo).ToListAsync();
 
                 ChangedSchools changedSchools = new ChangedSchools();
                 changedSchools.SchoolsAfterChanges.AddRange(schoolsAfterChanges);
