@@ -4,6 +4,7 @@ using NetTopologySuite.Geometries;
 
 namespace mapa_back.Models
 {
+    [Table("rspo_cache")]
     public class SchoolFromRSPO
     {
         [Key]
@@ -98,16 +99,16 @@ namespace mapa_back.Models
         public string? Regon { get; set; }
 
 		[Column("data_rozpoczecia")]
-		public DateTime? DataRozpoczecia { get; set; }
+		public DateOnly? DataRozpoczecia { get; set; }
 
 		[Column("data_zalozenia")]
-		public DateTime? DataZalozenia { get; set; }
+		public DateOnly? DataZalozenia { get; set; }
 
         [Column("data_zakonczenia")]
-        public DateTime? DataZakonczenia { get; set; }
+        public DateOnly? DataZakonczenia { get; set; }
 
         [Column("data_likwidacji")]
-		public DateTime? DataLikwidacji { get; set; }
+		public DateOnly? DataLikwidacji { get; set; }
 
 		[Column("liczba_uczniow")]
 		public int? LiczbaUczniow { get; set; }
@@ -120,7 +121,7 @@ namespace mapa_back.Models
         [MaxLength(64)]
         public string? SpecyfikaSzkoly { get; set; }
 
-		[Column("podmiot_prowadzacy")]
-		public List<ManagingEntity> PodmiotProwadzacy { get; set; }
+		[Column("podmiot_prowadzacy",TypeName ="jsonb")]
+		public string? PodmiotProwadzacy { get; set; }
 	}
 }

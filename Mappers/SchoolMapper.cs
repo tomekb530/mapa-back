@@ -1,7 +1,6 @@
 ﻿using mapa_back.Models.DTO;
 using mapa_back.Models;
 using NetTopologySuite.Geometries;
-using mapa_back.Models.RSPOApi;
 
 namespace mapa_back.Mappers
 {
@@ -39,7 +38,7 @@ namespace mapa_back.Mappers
 				LiczbaUczniow = school.LiczbaUczniow,
 				KategoriaUczniow = school.KategoriaUczniow,
 				SpecyfikaSzkoly = school.SpecyfikaSzkoly,
-				PodmiotProwadzacy = school.PodmiotProwadzacy.Select(x => new ManagingEntityDTO(x.Id, x.Nazwa, x.Typ?.Nazwa, x.Regon)).ToList(),
+				PodmiotProwadzacy = school.PodmiotProwadzacy,
 				Geography = MapGeographyToDTO(school.Geography)
 			};
 		}
@@ -76,7 +75,7 @@ namespace mapa_back.Mappers
                 LiczbaUczniow = school.LiczbaUczniow,
                 KategoriaUczniow = school.KategoriaUczniow,
                 SpecyfikaSzkoly = school.SpecyfikaSzkoly,
-                PodmiotProwadzacy = school.PodmiotProwadzacy.Select(x => new ManagingEntityDTO(x.Id, x.Nazwa, x.Typ?.Nazwa, x.Regon)).ToList(),
+                PodmiotProwadzacy = school.PodmiotProwadzacy,
                 Geography = MapGeographyToDTO(school.Geography)
             };
 		}

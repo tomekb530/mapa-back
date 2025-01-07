@@ -1,7 +1,5 @@
-﻿using AutoMapper;
-using mapa_back.Exceptions;
+﻿using mapa_back.Exceptions;
 using mapa_back.Models;
-using mapa_back.Models.DTO;
 using mapa_back.Models.RSPOApi;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
@@ -68,10 +66,9 @@ namespace mapa_back.Services
         {
             try
             {
-                SchoolFromRSPO school;
-                bool isNewSchool;
-                isNewSchool = !await _dbContext.SchoolsFromRSPO.AnyAsync(element => element.NumerRspo == schoolFromApi.NumerRspo);
-                if(isNewSchool)
+				SchoolFromRSPO? school = await _dbContext.SchoolsFromRSPO.FirstOrDefaultAsync(element => element.NumerRspo == schoolFromApi.NumerRspo);
+
+                if(school == null)
                 {
 					school = new SchoolFromRSPO
                     {
@@ -79,10 +76,6 @@ namespace mapa_back.Services
                     };
 					_dbContext.SchoolsFromRSPO.Add(school);
 				}
-                else
-                {
-					school = await _dbContext.SchoolsFromRSPO.FirstOrDefaultAsync(element => element.NumerRspo == schoolFromApi.NumerRspo);
-                }
 				school.Geography = geography;
 				school.Typ = schoolFromApi.Typ?.Nazwa;
 				school.StatusPublicznoPrawny = schoolFromApi.StatusPublicznoPrawny?.Nazwa;
@@ -103,28 +96,44 @@ namespace mapa_back.Services
                 school.DyrektorNazwisko = schoolFromApi.DyrektorNazwisko;
                 school.Nip = schoolFromApi.Nip;
 				school.Regon = schoolFromApi.Regon;
-				school.DataRozpoczecia = schoolFromApi.DataRozpoczecia;
-				school.DataZalozenia = schoolFromApi.DataZalozenia;
-				school.DataLikwidacji = schoolFromApi.DataLikwidacji;
+				school.DataRozpoczecia = ParseDate(schoolFromApi.DataRozpoczecia);
+				school.DataZalozenia = ParseDate(schoolFromApi.DataZalozenia);
+				school.DataLikwidacji = ParseDate(schoolFromApi.DataLikwidacji);
+                school.DataZakonczenia = ParseDate(schoolFromApi.DataZakonczenia);
 				school.LiczbaUczniow = schoolFromApi.LiczbaUczniow;
 				school.KategoriaUczniow = schoolFromApi.KategoriaUczniow?.Nazwa;
-				school.SpecyfikaSzkoly = schoolFromApi.SpecyfikaSzkoly;
-                school.PodmiotProwadzacy.AddRange(schoolFromApi.PodmiotProwadzacy.Select(x => new Models.ManagingEntity(x.Id, x.Nazwa, x.Typ, x.Regon)).ToList());
+				school.SpecyfikaSzkoly = schoolFromApi.SpecyfikaSzkoly?.Nazwa;
+                school.PodmiotProwadzacy = JsonSerializer.Serialize(schoolFromApi.PodmiotProwadzacy);
             }
             catch(Exception)
             {
                 throw new RSPOToDatabaseException("Unexpected error occurred while trying to save single school data to database");
             }
         }
-        private async Task SaveSchoolsToDatabase(List<SchoolApi> schools)
+		private DateOnly? ParseDate(string? dateString)
+		{
+			if (DateTimeOffset.TryParse(dateString, out var dto))
+			{
+				return DateOnly.FromDateTime(dto.Date);
+			}
+			return null;
+		}
+		private async Task SaveSchoolsToDatabase(List<SchoolApi> schools)
         {
             foreach (var school in schools)
             {
                 Point point = new Point(new Coordinate { X = school.Geolokalizacja.Longitude, Y = school.Geolokalizacja.Latitude });
                 await SaveSingleSchoolToDatabase(point, school);
             }
-            await _dbContext.SaveChangesAsync();
-            GC.Collect();
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+            }
+            catch(Exception ex)
+            {
+				throw new RSPOToDatabaseException("Unexpected error occurred while trying to save list of rspo schools data to database");
+			}
+			GC.Collect();
             GC.WaitForPendingFinalizers();
         }
         public async Task SyncDataFromRSPOApi()

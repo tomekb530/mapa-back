@@ -1,4 +1,5 @@
-﻿using mapa_back.Exceptions;
+﻿using mapa_back.Data;
+using mapa_back.Exceptions;
 using mapa_back.Models;
 using mapa_back.Models.DTO;
 using mapa_back.Services;
@@ -164,14 +165,14 @@ namespace mapa_back.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<ChangedSchools>> GetChanges(int size, int page)
+        public async Task<ActionResult<ChangedSchoolsResponse>> GetChanges(int size, int page)
         {
             try
             {
-                ChangedSchools changedSchools = await schoolsService.GetChangedSchoolsList(size, page);
-                if (changedSchools.SchoolsBeforeChanges.Any() && changedSchools.SchoolsAfterChanges.Any())
+				ChangedSchoolsResponse response = await schoolsService.GetChangedSchoolsList(size, page);
+                if (response.ChangedSchools.Any() || response.CorruptedRSPO.Any())
                 {
-                    return Ok(changedSchools);
+                    return Ok(response);
                 }
                 return NoContent();
             }

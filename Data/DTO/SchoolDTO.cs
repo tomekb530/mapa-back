@@ -1,8 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Numerics;
-using System.Text.Json.Serialization;
-
-namespace mapa_back.Models.DTO
+﻿namespace mapa_back.Models.DTO
 {
     public class SchoolDTO
     {
@@ -27,14 +23,14 @@ namespace mapa_back.Models.DTO
         public string? DyrektorNazwisko { get; set; }
 		public string? Nip { get; set; }
 		public string? Regon { get; set; }
-		public DateTime? DataRozpoczecia { get; set; }
-		public DateTime? DataZalozenia { get; set; }
-        public DateTime? DataZakonczenia { get; set; }
-        public DateTime? DataLikwidacji { get; set; }
+		public DateOnly? DataRozpoczecia { get; set; }
+		public DateOnly? DataZalozenia { get; set; }
+        public DateOnly? DataZakonczenia { get; set; }
+        public DateOnly? DataLikwidacji { get; set; }
 		public int? LiczbaUczniow { get; set; }
 		public string? KategoriaUczniow { get; set; }
 		public string? SpecyfikaSzkoly { get; set; }
-		public List<ManagingEntityDTO> PodmiotProwadzacy { get; set; }
+		public string? PodmiotProwadzacy { get; set; }
 		public GeographyDTO? Geography { get; set; }
     }
 }

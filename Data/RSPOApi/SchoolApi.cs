@@ -53,7 +53,7 @@ namespace mapa_back.Models.RSPOApi
         public string? NumerBudynku { get; set; }
 
         [JsonPropertyName("dataZalozenia")]
-        public DateTime? DataZalozenia { get; set; }
+        public string? DataZalozenia { get; set; }
 
         [JsonPropertyName("liczbaUczniow")]
         public int? LiczbaUczniow { get; set; }
@@ -62,16 +62,16 @@ namespace mapa_back.Models.RSPOApi
         public string? Regon { get; set; }
 
         [JsonPropertyName("dataZakonczenia")]
-        public DateTime? DataZakonczenia { get; set; }
+        public string? DataZakonczenia { get; set; }
 
         [JsonPropertyName("dataLikwidacji")]
-        public DateTime? DataLikwidacji { get; set; }
+        public string? DataLikwidacji { get; set; }
 
         [JsonPropertyName("kategoriaUczniow")]
         public RSPOTypeSchema? KategoriaUczniow { get; set; }
 
         [JsonPropertyName("specyfikaSzkoly")]
-        public string? SpecyfikaSzkoly { get; set; }
+        public RSPOTypeSchema? SpecyfikaSzkoly { get; set; }
 
         [JsonPropertyName("statusPublicznoPrawny")]
         public RSPOTypeSchema? StatusPublicznoPrawny { get; set; }
@@ -83,10 +83,10 @@ namespace mapa_back.Models.RSPOApi
         public string? GminaRodzaj { get; set; }
 
         [JsonPropertyName("dataRozpoczecia")]
-        public DateTime? DataRozpoczecia { get; set; }
+        public string? DataRozpoczecia { get; set; }
 
         [JsonPropertyName("podmiotProwadzacy")]
-        public List<ManagingEntity> PodmiotProwadzacy { get; set; }
+		public List<RSPOTypeSchema>? PodmiotProwadzacy { get; set; }
 
         [JsonPropertyName("geolokalizacja")]
         public required Geolokalizacja Geolokalizacja { get; set; }
