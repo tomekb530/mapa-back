@@ -1,6 +1,5 @@
 using DotNetEnv;
 using mapa_back;
-using mapa_back.Mappers;
 using mapa_back.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,7 +20,6 @@ if (string.IsNullOrEmpty(connectionString))
 builder.Services.AddDbContext<DatabaseContext>(options => options.UseNpgsql(connectionString, o => o.UseNetTopologySuite()), optionsLifetime:ServiceLifetime.Scoped);
 builder.Services.AddScoped<IRSPOApiService, RSPOApiService>();
 builder.Services.AddScoped<ISchoolsService, SchoolsService>();
-builder.Services.AddAutoMapper(typeof(MapToBusinessData));
 builder.Services.AddHttpClient();
 builder.Host.UseSystemd();
 
