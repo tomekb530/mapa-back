@@ -12,5 +12,7 @@ namespace mapa_back.Data
 			ChangedSchools = new List<ChangedSchool>();
 			CorruptedRSPO = new List<int>();
 		}
+
+		public long schoolsCount;
 	}
 }

@@ -179,7 +179,8 @@ namespace mapa_back.Services
                     }
 					pageIndex++;
 				}
-				response.ChangedSchools = changedSchools.Skip(pageNumber * size).Take(size).ToList();
+                response.schoolsCount = changedSchools.Count();
+				response.ChangedSchools = changedSchools.Skip((pageNumber-1) * size).Take(size).ToList();
 				return response;
 			}
             catch(Exception)
@@ -188,5 +189,134 @@ namespace mapa_back.Services
             }
             
         }
-    }
+
+		public async Task<ChangedSchool> GetSingleChangedSchool(int id)
+        {
+            if(id <= 0)
+            {
+                throw new ArgumentException("Id has to be higher than 0");
+            }
+    
+            School? singleSchool = _dbContext.Schools.FirstOrDefault(s => s.Id == id);
+            if(singleSchool == null)
+            {
+                throw new SchoolServiceException("Couldnt find school with given Id in database");
+            }
+            SchoolFromRSPO? singleSchoolFromRSPO = _dbContext.SchoolsFromRSPO.FirstOrDefault(s => s.NumerRspo == singleSchool.NumerRspo);
+            if(singleSchoolFromRSPO == null)
+            {
+                throw new SchoolServiceException($"Couldn't find matching school in RSPO Database with given rspo number: {singleSchool.NumerRspo}");
+            }
+
+            ChangedSchool changedSchool = new ChangedSchool(SchoolMapper.MapToDTO(singleSchool), SchoolMapper.MapToDTO(singleSchoolFromRSPO));
+            return changedSchool;
+
+		}
+
+        public async Task<bool> PostSingleSchool(School school)
+        {
+            if(school == null)
+            {
+                throw new SchoolServiceException("School cannot be null");
+            }
+            try
+            {
+                _dbContext.Add(school);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Couldn't add given school to database");
+            }
+        }
+
+		public async Task<bool> PostManySchools(List<School> schools)
+		{
+			if (schools == null)
+			{
+				throw new SchoolServiceException("School cannot be null");
+			}
+            if(schools.Count <= 0)
+            {
+                throw new SchoolServiceException("Schools cannot be empty list");
+            }
+			try
+			{
+                foreach(var school in schools)
+                {
+					_dbContext.Add(school);
+				}
+                await _dbContext.SaveChangesAsync();
+				return true;
+			}
+			catch (Exception ex)
+			{
+				throw new DatabaseException("Couldn't add given school to database");
+			}
+		}
+
+		public async Task<bool> UpdateSingleSchool(School school)
+		{
+			if (school == null)
+			{
+				throw new SchoolServiceException("School cannot be null");
+			}
+			if (school.Id <= 0)
+			{
+				throw new ArgumentException("Id has to be higher than 0");
+			}
+			try
+			{
+                if (!_dbContext.Schools.Any(s => s.Id == school.Id))
+                {
+                    throw new SchoolServiceException("Couldn't find school with matching Id in database");
+                }
+				_dbContext.Attach(school);
+				_dbContext.Entry(school).Property(s => s.Nazwa).IsModified = true;
+                await _dbContext.SaveChangesAsync();
+				return true;
+			}
+			catch (Exception ex)
+			{
+				throw new DatabaseException("Couldn't update given school in database");
+			}
+		}
+
+		public async Task<bool> UpdateManySchools(List<School> schools)
+		{
+			if (schools == null)
+			{
+				throw new SchoolServiceException("School cannot be null");
+			}
+			if (schools.Count <= 0)
+			{
+				throw new SchoolServiceException("Schools cannot be empty list");
+			}
+			try
+			{
+				var schoolIds = schools.Select(s => s.Id).ToList();
+
+				var existingSchools = await _dbContext.Schools
+					.Where(s => schoolIds.Contains(s.Id))
+					.ToListAsync();
+
+				if (existingSchools.Count != schools.Count)
+				{
+					throw new ArgumentException("Some schools with given id do not exist in the database");
+				}
+				foreach (var school in schools)
+                {
+                    _dbContext.Attach(school);
+                    _dbContext.Entry(school).Property(s => s.Nazwa).IsModified = true;
+                }
+				await _dbContext.SaveChangesAsync();
+				return true;
+			}
+			catch (Exception ex)
+			{
+				throw new DatabaseException("Couldn't update given school in database");
+			}
+		}
+	}
 }

@@ -1,10 +1,10 @@
 ﻿using mapa_back.Data;
 using mapa_back.Exceptions;
+using mapa_back.Mappers;
 using mapa_back.Models;
 using mapa_back.Models.DTO;
 using mapa_back.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -194,5 +194,150 @@ namespace mapa_back.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred while trying to get changes. Try again later");
             }
         }
-    }
+
+		[HttpGet("GetSingleSchoolWithChanges")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<ActionResult<ChangedSchool>> GetSingleSchoolWithChanges(int id)
+		{
+			try
+			{
+				ChangedSchool response = await schoolsService.GetSingleChangedSchool(id);
+				if (response == null)
+				{
+					return NotFound();
+				}
+				return Ok(response);
+			}
+			catch (ArgumentException ex)
+			{
+				return StatusCode(StatusCodes.Status400BadRequest, ex.Message);
+			}
+			catch (SchoolServiceException ex)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+			}
+			catch (Exception)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred while trying to get changes. Try again later");
+			}
+		}
+
+		[HttpPost("AddSingleSchool")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<ActionResult<bool>> AddSingleSchool(SchoolDTO schoolDTO)
+		{
+			try
+			{
+                bool response = await schoolsService.PostSingleSchool(SchoolMapper.MapToSchool(schoolDTO));
+				if (response == false)
+				{
+					return StatusCode(500, "Unexpected error occurred");
+				}
+				return Ok(response);
+			}
+			catch (SchoolServiceException ex)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+			}
+			catch (Exception)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred while trying to get changes. Try again later");
+			}
+		}
+
+
+		[HttpPost("AddManySchools")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<ActionResult<bool>> AddManySchools(List<SchoolDTO> schoolsDTO)
+		{
+			try
+			{
+                List<School> schools = schoolsDTO.Select(x => SchoolMapper.MapToSchool(x)).ToList();
+				bool response = await schoolsService.PostManySchools(schools);
+				if (response == false)
+				{
+					return StatusCode(500, "Unexpected error occurred");
+				}
+				return Ok(response);
+			}
+			catch (SchoolServiceException ex)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+			}
+			catch (Exception)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred while trying to get changes. Try again later");
+			}
+		}
+
+		[HttpPut("UpdateSingleSchool")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<ActionResult<bool>> UpdateSingleSchool(SchoolDTO schoolDTO)
+		{
+			try
+			{
+				bool response = await schoolsService.UpdateSingleSchool(SchoolMapper.MapToSchool(schoolDTO));
+				if (response == false)
+				{
+					return StatusCode(500, "Unexpected error occurred");
+				}
+				return Ok(response);
+			}
+			catch (ArgumentException ex)
+			{
+				return StatusCode(StatusCodes.Status400BadRequest, ex.Message);
+			}
+			catch (SchoolServiceException ex)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+			}
+			catch (Exception)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred while trying to get changes. Try again later");
+			}
+		}
+
+		[HttpPut("UpdateManySchools")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<ActionResult<bool>> UpdateManySchools(List<SchoolDTO> schoolsDTO)
+		{
+			try
+			{
+				List<School> schools = schoolsDTO.Select(x => SchoolMapper.MapToSchool(x)).ToList();
+				bool response = await schoolsService.UpdateManySchools(schools);
+				if (response == false)
+				{
+					return StatusCode(500,"Unexpected error occurred");
+				}
+				return Ok(response);
+			}
+			catch (ArgumentException ex)
+			{
+				return StatusCode(StatusCodes.Status400BadRequest, ex.Message);
+			}
+			catch (SchoolServiceException ex)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+			}
+			catch (Exception)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred while trying to get changes. Try again later");
+			}
+		}
+	}
 }
