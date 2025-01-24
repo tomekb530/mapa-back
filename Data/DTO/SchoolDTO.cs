@@ -1,4 +1,6 @@
-﻿namespace mapa_back.Models.DTO
+﻿using mapa_back.Data.RSPOApi.PodmiotProwadzacy;
+
+namespace mapa_back.Models.DTO
 {
     public class SchoolDTO
     {
@@ -30,7 +32,7 @@
 		public int? LiczbaUczniow { get; set; }
 		public string? KategoriaUczniow { get; set; }
 		public string? SpecyfikaSzkoly { get; set; }
-		public string? PodmiotProwadzacy { get; set; }
+		public List<PodmiotProwadzacy>? PodmiotProwadzacy { get; set; }
 		public GeographyDTO? Geography { get; set; }
     }
 }

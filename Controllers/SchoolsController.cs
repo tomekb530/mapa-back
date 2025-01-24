@@ -162,6 +162,7 @@ namespace mapa_back.Controllers
         }
         [HttpGet("GetChanges")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -339,5 +340,66 @@ namespace mapa_back.Controllers
 				return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred while trying to get changes. Try again later");
 			}
 		}
+
+		[HttpGet("GetMissingSchoolsInRSPOTable")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<ActionResult<List<SchoolDTO>>> GetMissingSchoolsInRSPOTable(int size, int page)
+		{
+			try
+			{
+                List<SchoolDTO> response = await schoolsService.GetMissingSchoolsInRSPOTable(size, page);
+				if (response.Count <= 0)
+				{
+					return NoContent();
+				}
+				return Ok(response);
+			}
+			catch (SchoolServiceException ex)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+			}
+			catch (Exception)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred while trying to get changes. Try again later");
+			}
+		}
+
+		[HttpGet("GetMissingSchoolsInSchoolsTable")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<ActionResult<List<SchoolDTO>>> GetMissingSchoolsInSchoolsTable(int size, int page)
+		{
+			try
+			{
+				List<SchoolDTO> response = await schoolsService.GetMissingSchoolsInSchoolsTable(size, page);
+				if (response.Count <= 0)
+				{
+					return NoContent();
+				}
+				return Ok(response);
+			}
+			catch (SchoolServiceException ex)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+			}
+			catch (Exception)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred while trying to get changes. Try again later");
+			}
+		}
+
+		[HttpGet("SchoolsFromRspoTableToSchoolMapTable")]
+        public async Task<ActionResult<bool>> SchoolsFromRspoTableToSchoolMapTable()
+        {
+            var result = await schoolsService.AddSchoolsFromRSPOTableToMapSchoolTable();
+            return Ok(result);
+        }
 	}
 }

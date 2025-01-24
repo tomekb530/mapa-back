@@ -2,6 +2,8 @@
 using mapa_back.Models;
 using NetTopologySuite.Geometries;
 using System.Text.Json;
+using Newtonsoft.Json;
+using mapa_back.Data.RSPOApi.PodmiotProwadzacy;
 
 namespace mapa_back.Mappers
 {
@@ -39,7 +41,9 @@ namespace mapa_back.Mappers
 				LiczbaUczniow = school.LiczbaUczniow,
 				KategoriaUczniow = school.KategoriaUczniow,
 				SpecyfikaSzkoly = school.SpecyfikaSzkoly,
-				PodmiotProwadzacy = school.PodmiotProwadzacy,
+				PodmiotProwadzacy = school.PodmiotProwadzacy != null
+					? JsonConvert.DeserializeObject<List<PodmiotProwadzacy>>(school.PodmiotProwadzacy)
+					: null,
 				Geography = MapGeographyToDTO(school.Geography)
 			};
 		}
@@ -76,8 +80,10 @@ namespace mapa_back.Mappers
                 LiczbaUczniow = school.LiczbaUczniow,
                 KategoriaUczniow = school.KategoriaUczniow,
                 SpecyfikaSzkoly = school.SpecyfikaSzkoly,
-                PodmiotProwadzacy = school.PodmiotProwadzacy,
-                Geography = MapGeographyToDTO(school.Geography)
+                PodmiotProwadzacy = school.PodmiotProwadzacy != null
+					? JsonConvert.DeserializeObject<List<PodmiotProwadzacy>>(school.PodmiotProwadzacy)
+					: null,
+				Geography = MapGeographyToDTO(school.Geography)
             };
 		}
 
@@ -124,6 +130,7 @@ namespace mapa_back.Mappers
 				LiczbaUczniow = school.LiczbaUczniow,
 				KategoriaUczniow = school.KategoriaUczniow,
 				SpecyfikaSzkoly = school.SpecyfikaSzkoly,
+				PodmiotProwadzacy = JsonConvert.SerializeObject(school.PodmiotProwadzacy),
 				Geography = MapToGeography(school.Geography)
 			};
 		}
@@ -134,15 +141,6 @@ namespace mapa_back.Mappers
 
 			return new Point(new Coordinate { X = geography.X, Y = geography.Y });
 
-		}
-
-		private static string MapToPodmiotProwadzacy(string podmiotProwadzacyJson)
-		{
-			if (!string.IsNullOrEmpty(podmiotProwadzacyJson))
-			{
-				return JsonSerializer.Serialize(JsonSerializer.Deserialize<object>(podmiotProwadzacyJson));
-			}
-			return podmiotProwadzacyJson;
 		}
 	}
 }

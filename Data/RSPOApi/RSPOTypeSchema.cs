@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using mapa_back.Data.RSPOApi.PodmiotProwadzacy;
+using System.Text.Json.Serialization;
 
 namespace mapa_back.Models.RSPOApi
 {
@@ -8,5 +9,8 @@ namespace mapa_back.Models.RSPOApi
         public int? Id { get; set; }
         [JsonPropertyName("nazwa")]
         public string? Nazwa { get; set; }
+
+        [JsonPropertyName("typ")]
+        public PodmiotProwadzacyTyp Typ { get; set; }
     }
 }

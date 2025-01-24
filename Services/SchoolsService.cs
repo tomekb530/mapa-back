@@ -1,9 +1,11 @@
 ﻿using mapa_back.Data;
+using mapa_back.Data.RSPOApi.PodmiotProwadzacy;
 using mapa_back.Exceptions;
 using mapa_back.Mappers;
 using mapa_back.Models;
 using mapa_back.Models.DTO;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace mapa_back.Services
 {
@@ -73,8 +75,67 @@ namespace mapa_back.Services
             {
                 throw new DatabaseException($"Unexpected eror occurred while trying to delete school with given Id: {id} from database");
             }
-        }
-        public async Task DeleteManySchools(List<int> ids)
+		}
+        public async Task<bool> AddSchoolsFromRSPOTableToMapSchoolTable()
+        {
+			int size = 1000;
+			int pageNumber = 0;
+			while (true)
+			{
+				List<SchoolFromRSPO> schoolsFromRSPO = await _dbContext.SchoolsFromRSPO
+							   .OrderBy(x => x.Id)
+							   .Skip(pageNumber * size)
+							   .Take(size)
+							   .ToListAsync();
+
+                if (!schoolsFromRSPO.Any())
+                {
+                    break;
+                }
+
+				var schools = schoolsFromRSPO.Select(item => new School
+				{
+					NumerRspo = item.NumerRspo,
+					Geography = item.Geography,
+					Typ = item.Typ,
+					StatusPublicznoPrawny = item.StatusPublicznoPrawny,
+					Nazwa = item.Nazwa,
+					Wojewodztwo = item.Wojewodztwo,
+					Gmina = item.Gmina,
+					Powiat = item.Powiat,
+					Miejscowosc = item.Miejscowosc,
+					GminaRodzaj = item.GminaRodzaj,
+					KodPocztowy = item.KodPocztowy,
+					Ulica = item.Ulica,
+					NumerBudynku = item.NumerBudynku,
+					NumerLokalu = item.NumerLokalu,
+					Email = item.Email,
+					Telefon = item.Telefon,
+					StronaInternetowa = item.StronaInternetowa,
+					DyrektorImie = item.DyrektorImie,
+					DyrektorNazwisko = item.DyrektorNazwisko,
+					Nip = item.Nip,
+					Regon = item.Regon,
+					DataRozpoczecia = item.DataRozpoczecia,
+					DataZalozenia = item.DataZalozenia,
+					DataZakonczenia = item.DataZakonczenia,
+					DataLikwidacji = item.DataLikwidacji,
+					LiczbaUczniow = item.LiczbaUczniow,
+					KategoriaUczniow = item.KategoriaUczniow,
+					SpecyfikaSzkoly = item.SpecyfikaSzkoly,
+					PodmiotProwadzacy = item.PodmiotProwadzacy,
+				}).ToList();
+				if (schools.Any())
+				{
+					await _dbContext.Schools.AddRangeAsync(schools);
+					await _dbContext.SaveChangesAsync();
+				}
+				pageNumber++;
+
+			}
+            return true;
+		}
+			public async Task DeleteManySchools(List<int> ids)
         {
             try
             {
@@ -129,13 +190,22 @@ namespace mapa_back.Services
                         try
                         {
                             School school = dbSchools.FirstOrDefault(x => x.NumerRspo == element.NumerRspo);
-                            if (school == null)
+							if (school == null)
                             {
-                                changedSchools.Add(new ChangedSchool(null, SchoolMapper.MapToDTO(element)));
+                                continue;
                             }
                             else
                             {
-                                bool isDifferent =
+								var podmiotProwadzacySchool = string.IsNullOrEmpty(school.PodmiotProwadzacy)
+	                                ? new List<PodmiotProwadzacy>()
+	                                : JsonConvert.DeserializeObject<List<PodmiotProwadzacy>>(school.PodmiotProwadzacy);
+
+								var podmiotProwadzacyElement = string.IsNullOrEmpty(element.PodmiotProwadzacy)
+									? new List<PodmiotProwadzacy>()
+									: JsonConvert.DeserializeObject<List<PodmiotProwadzacy>>(element.PodmiotProwadzacy);
+
+                                bool isPodmiotProwadzacySame = IsPodmiotProwadzacySame(podmiotProwadzacySchool, podmiotProwadzacyElement);
+								bool isDifferent =
                                     school.Geography.X != element.Geography.X ||
                                     school.Geography.Y != element.Geography.Y ||
                                     school.Typ != element.Typ ||
@@ -164,7 +234,7 @@ namespace mapa_back.Services
                                     school.LiczbaUczniow != element.LiczbaUczniow ||
                                     school.KategoriaUczniow != element.KategoriaUczniow ||
                                     school.SpecyfikaSzkoly != element.SpecyfikaSzkoly ||
-                                    school.PodmiotProwadzacy != element.PodmiotProwadzacy;
+									!isPodmiotProwadzacySame;
 
                                 if (isDifferent)
                                 {
@@ -188,6 +258,34 @@ namespace mapa_back.Services
                 throw new DatabaseException("An unexpected error occurred while trying to get data from database");
             }
             
+        }
+        private bool IsPodmiotProwadzacySame(List<PodmiotProwadzacy> podmiotOld, List<PodmiotProwadzacy> podmiotNew)
+        {
+			if (podmiotOld.Count != podmiotNew.Count)
+				return false;
+            if (podmiotOld == null && podmiotNew == null) return true;
+			foreach (var elementOld in podmiotOld)
+            {
+                var elementNew = podmiotNew.FirstOrDefault(x => x.Id == elementOld.Id);
+                if (elementNew == null) return false;
+
+                if(elementOld.Nazwa != elementNew.Nazwa)
+                {
+                    return false;
+                }
+                if(elementOld.Typ == null && elementNew.Typ != null || elementOld.Typ != null && elementNew.Typ == null)
+                {
+					return false;
+				}
+                if(elementOld.Typ != null && elementNew.Typ != null)
+                {
+                    if(elementOld.Typ.Nazwa != elementNew.Typ.Nazwa || elementOld.Typ.Id  != elementNew.Typ.Id)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
 		public async Task<ChangedSchool> GetSingleChangedSchool(int id)
@@ -272,9 +370,9 @@ namespace mapa_back.Services
                 {
                     throw new SchoolServiceException("Couldn't find school with matching Id in database");
                 }
-				_dbContext.Attach(school);
-				_dbContext.Entry(school).Property(s => s.Nazwa).IsModified = true;
-                await _dbContext.SaveChangesAsync();
+                School editetSchool = await _dbContext.Schools.FirstOrDefaultAsync(x => x.Id == school.Id);
+                _dbContext.Entry(editetSchool).CurrentValues.SetValues(school);
+				await _dbContext.SaveChangesAsync();
 				return true;
 			}
 			catch (Exception ex)
@@ -307,9 +405,9 @@ namespace mapa_back.Services
 				}
 				foreach (var school in schools)
                 {
-                    _dbContext.Attach(school);
-                    _dbContext.Entry(school).Property(s => s.Nazwa).IsModified = true;
-                }
+					 School editetSchool = await _dbContext.Schools.FirstOrDefaultAsync(x => x.Id == school.Id);
+					_dbContext.Entry(editetSchool).CurrentValues.SetValues(school);
+				}
 				await _dbContext.SaveChangesAsync();
 				return true;
 			}
@@ -318,5 +416,37 @@ namespace mapa_back.Services
 				throw new DatabaseException("Couldn't update given school in database");
 			}
 		}
+
+        public async Task<List<SchoolDTO>> GetMissingSchoolsInRSPOTable(int size, int pageNumber)
+        {
+            try
+            {
+                var missingSchools = await _dbContext.Schools.Where(school => !_dbContext.SchoolsFromRSPO.Any(rspo => rspo.NumerRspo == school.NumerRspo))
+                    .Select(x => SchoolMapper.MapToDTO(x)).Skip(size * (pageNumber-1)).Take(size).ToListAsync();
+				return missingSchools;
+			}
+            catch(Exception)
+            {
+                throw new SchoolServiceException("Unexpected error occurred while trying to get missing schools from school table");
+
+			}
+        }
+
+		public async Task<List<SchoolDTO>> GetMissingSchoolsInSchoolsTable(int size, int pageNumber)
+		{
+			try
+			{
+				var missingSchools = await _dbContext.SchoolsFromRSPO.Where(school => !_dbContext.Schools.Any(rspo => rspo.NumerRspo == school.NumerRspo))
+					.Select(x => SchoolMapper.MapToDTO(x)).Skip(size * (pageNumber-1)).Take(size).ToListAsync();
+				return missingSchools;
+			}
+			catch (Exception)
+			{
+				throw new SchoolServiceException("Unexpected error occurred while trying to get missing schools from school table");
+
+			}
+		}
+
+
 	}
 }

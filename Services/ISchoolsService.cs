@@ -16,6 +16,10 @@ namespace mapa_back.Services
         Task<bool> PostManySchools(List<School> schools);
         Task<bool> UpdateSingleSchool(School school);
 		Task<bool> UpdateManySchools(List<School> schools);
+        Task<bool> AddSchoolsFromRSPOTableToMapSchoolTable();
+        Task<List<SchoolDTO>> GetMissingSchoolsInRSPOTable(int size, int pageNumber);
+		Task<List<SchoolDTO>> GetMissingSchoolsInSchoolsTable(int size, int pageNumber);
+
 
 	}
 }
