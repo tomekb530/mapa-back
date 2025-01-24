@@ -1,6 +1,7 @@
 ﻿using mapa_back.Data;
 using mapa_back.Enums;
 using mapa_back.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
 using System.Text;
@@ -22,6 +23,7 @@ namespace mapa_back.Controllers
         }
 
         [HttpPost("Login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(string email, string password)
         {
             User user = await usersService.GetUserByEmailAsync(email);

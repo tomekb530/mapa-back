@@ -15,7 +15,11 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DATABASE_CONNECTION_STRING": "User ID=postgres;Password=superhaslofajne;Host=localhost;Port=5432;Database=postgres;Pooling=true;Connection Lifetime=0;",
+        "JWT_ISSUER": "mapa-back",
+        "JWT_AUDIENCE": "mapa-front",
+        "JWT_SECRET": "s26n1IynIFgkhTzq7aeDRUQD6dK213aSdupa"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7125;http://localhost:5157"
