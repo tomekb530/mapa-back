@@ -394,12 +394,15 @@ namespace mapa_back.Controllers
 				return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred while trying to get changes. Try again later");
 			}
 		}
-
+		/*
+		 * Odkomentowac tylko do przekopiowania danych
+		 * 
 		[HttpGet("SchoolsFromRspoTableToSchoolMapTable")]
         public async Task<ActionResult<bool>> SchoolsFromRspoTableToSchoolMapTable()
         {
             var result = await schoolsService.AddSchoolsFromRSPOTableToMapSchoolTable();
             return Ok(result);
         }
+		*/
 	}
 }
