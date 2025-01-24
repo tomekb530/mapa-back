@@ -16,7 +16,7 @@ namespace mapa_back.Middlewares
         {
             // Get the token from the Authorization header
             var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            Console.WriteLine(context.Request.Headers["Authorization"].ToString());
+            //Console.WriteLine(context.Request.Headers["Authorization"].ToString());
             if (!string.IsNullOrEmpty(token))
             {
 

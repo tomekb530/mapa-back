@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using AutoMapper.Configuration.Annotations;
+using Swashbuckle.AspNetCore.Filters;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,30 +23,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = @"JWT Authorization header using the Bearer scheme. 
-                      Enter 'Bearer' [space] and then your token in the text input below.
-                      Example: 'Bearer 12345abcdef'",
         Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer",
+        Description = "Format: 'Bearer {token}'"
     });
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type=ReferenceType.SecurityScheme,
-                    Id="Bearer"
-                }
-            },
-            new string[]{}
-        }
-    });
+
+    c.OperationFilter<AuthorizeOperationFilter>();
 });
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING");
 if (string.IsNullOrEmpty(connectionString))
