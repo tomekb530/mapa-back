@@ -432,6 +432,23 @@ namespace mapa_back.Services
 			}
         }
 
+        public async Task<int> GetMissingSchoolsInRSPOTableCount()
+        {
+			try
+			{
+				var missingSchoolsCount = await _dbContext.Schools
+                    .CountAsync(school => !_dbContext.SchoolsFromRSPO
+                    .Any(rspo => rspo.NumerRspo == school.NumerRspo));
+
+				return missingSchoolsCount;
+			}
+			catch (Exception)
+			{
+				throw new SchoolServiceException("Unexpected error occurred while trying to get missing schools from school table");
+
+			}
+		}
+
 		public async Task<List<SchoolDTO>> GetMissingSchoolsInSchoolsTable(int size, int pageNumber)
 		{
 			try
@@ -446,6 +463,24 @@ namespace mapa_back.Services
 
 			}
 		}
+
+		public async Task<int> GetMissingSchoolsInSchoolsTableCount()
+		{
+			try
+			{
+				var missingSchoolsCount = await _dbContext.SchoolsFromRSPO
+					.CountAsync(school => !_dbContext.Schools
+					.Any(rspo => rspo.NumerRspo == school.NumerRspo));
+
+				return missingSchoolsCount;
+			}
+			catch (Exception)
+			{
+				throw new SchoolServiceException("Unexpected error occurred while trying to get missing schools from school table");
+
+			}
+		}
+
 
 
 	}

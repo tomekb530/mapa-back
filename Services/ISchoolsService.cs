@@ -19,6 +19,9 @@ namespace mapa_back.Services
         Task<bool> AddSchoolsFromRSPOTableToMapSchoolTable();
         Task<List<SchoolDTO>> GetMissingSchoolsInRSPOTable(int size, int pageNumber);
 		Task<List<SchoolDTO>> GetMissingSchoolsInSchoolsTable(int size, int pageNumber);
+        Task<int> GetMissingSchoolsInRSPOTableCount();
+		Task<int> GetMissingSchoolsInSchoolsTableCount();
+
 
 
 	}

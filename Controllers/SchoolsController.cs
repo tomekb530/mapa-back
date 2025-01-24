@@ -5,6 +5,7 @@ using mapa_back.Models;
 using mapa_back.Models.DTO;
 using mapa_back.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -368,6 +369,28 @@ namespace mapa_back.Controllers
 			}
 		}
 
+		[HttpGet("GetMissingSchoolsInRSPOTableCount")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<ActionResult<int>> GetMissingSchoolsInRSPOTableCount()
+		{
+			try
+			{
+				int response = await schoolsService.GetMissingSchoolsInRSPOTableCount();
+				return Ok(response);
+			}
+			catch (SchoolServiceException ex)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+			}
+			catch (Exception)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred while trying to get changes. Try again later");
+			}
+		}
+
 		[HttpGet("GetMissingSchoolsInSchoolsTable")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -394,6 +417,29 @@ namespace mapa_back.Controllers
 				return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred while trying to get changes. Try again later");
 			}
 		}
+
+		[HttpGet("GetMissingSchoolsInSchoolsTableCount")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<ActionResult<int>> GetMissingSchoolsInSchoolsTableCount()
+		{
+			try
+			{
+				int response = await schoolsService.GetMissingSchoolsInSchoolsTableCount();
+				return Ok(response);
+			}
+			catch (SchoolServiceException ex)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+			}
+			catch (Exception)
+			{
+				return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred while trying to get changes. Try again later");
+			}
+		}
+
 		/*
 		 * Odkomentowac tylko do przekopiowania danych
 		 * 
