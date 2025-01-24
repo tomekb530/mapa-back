@@ -1,4 +1,5 @@
-﻿using mapa_back.Models;
+﻿using mapa_back.Data;
+using mapa_back.Models;
 using mapa_back.Models.DTO;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -13,6 +14,6 @@ namespace mapa_back
         public DbSet<SchoolFromRSPO> SchoolsFromRSPO { get; set; }
         public DbSet<School> Schools { get; set; }
 
-
+        public DbSet<User> Users { get; set; }
     }
 }
