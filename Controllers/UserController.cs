@@ -22,9 +22,9 @@ namespace mapa_back.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login(string login, string password)
+        public async Task<IActionResult> Login(string email, string password)
         {
-            User user = await usersService.GetUserByEmailAsync(login);
+            User user = await usersService.GetUserByEmailAsync(email);
             if(user != null)
             {
                 if (user.Password == Convert.ToHexString(sha256.ComputeHash(Encoding.UTF8.GetBytes(password))))
@@ -45,15 +45,15 @@ namespace mapa_back.Controllers
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> Register(string login, string password, string firstname, string lastname)
+        public async Task<IActionResult> Register(string email, string password, string firstname, string lastname)
         {
-            User user = await usersService.GetUserByEmailAsync(login);
+            User user = await usersService.GetUserByEmailAsync(email);
             string passHash = Convert.ToHexString(sha256.ComputeHash(Encoding.UTF8.GetBytes(password)));
             if (user == null)
             {
                 user = new User()
                 {
-                    Email = login,
+                    Email = email,
                     FirstName = firstname,
                     LastName = lastname,
                     Password = passHash,
